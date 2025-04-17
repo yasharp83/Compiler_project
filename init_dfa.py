@@ -1,15 +1,5 @@
 import DFA
-
-Keywords = ["if" , "else" , "void" , "int" , "while" , "break" , "return"]
-Symbols = [';' , ':' , ',' , '[' , ']' , '(' , ')' , '{' , '}' , '+' , '-' , '*' , '/' , '\\' , '=' , '=' , '>' , '<']
-White_spaces = [chr(32),chr(10),chr(9),chr(13),chr(11),chr(12)]
-Digits = [chr(i) for i in range(48,58)]
-English_aphabet = [chr(i) for i in (list(range(65,91)) + list(range(97,123)))]
-Illegal = []
-for i in range(128):
-    if (chr(i) not in Symbols) and (chr(i) not in White_spaces) and (chr(i) not in Digits) and (chr(i) not in English_aphabet) :
-        Illegal.append(chr(i))
-sigma = [chr(i) for i in range(128)]
+from alphabet_config import *
 
 def get_except(L1,L2):
     return [i for i in L1 if i not in L2]
@@ -32,13 +22,13 @@ def init_dfa():
 
     #symbol general
     for symbol in get_except(Symbols,['*' , '/' , '=']):
-        symbol_state_i = dfa.add_state(True,False,"SYMBOL"+symbol)
+        symbol_state_i = dfa.add_state(True,False,"SYMBOL")
         dfa.add_edge(dfa.start_node,symbol_state_i,[symbol])
         dfa.add_edge(symbol_state_i,dfa.basic_trap,sigma)
     
     #handling = == * / seperatly
     #handling *
-    symbol_state_star = dfa.add_state(True,False,"SYMBOL*")
+    symbol_state_star = dfa.add_state(True,False,"SYMBOL")
     dfa.add_edge(dfa.start_node,symbol_state_star,['*'])
     dfa.add_edge(symbol_state_star,dfa.basic_trap,White_spaces+English_aphabet+Digits+get_except(Symbols , ['/']))
     dfa.add_edge(symbol_state_star,error_invalid_input,Illegal)
@@ -46,15 +36,15 @@ def init_dfa():
     dfa.add_edge(symbol_state_star,error_unmachted_comment,['/'])
 
     #handling = ==
-    symbol_state_eq = dfa.add_state(True,False,"SYMBOL=")
-    symbol_state_eqeq = dfa.add_state(True,False,"SYMBOL==")
+    symbol_state_eq = dfa.add_state(True,False,"SYMBOL")
+    symbol_state_eqeq = dfa.add_state(True,False,"SYMBOL")
     dfa.add_edge(dfa.start_node,symbol_state_eq,["="])
     dfa.add_edge(symbol_state_eq,symbol_state_eqeq,["="])
     dfa.add_edge(symbol_state_eq,dfa.basic_trap,get_except(sigma , ["="]))
     dfa.add_edge(symbol_state_eqeq,dfa.basic_trap,sigma)
 
     #handling /
-    symbol_state_div = dfa.add_state(True,False,"Symbol/")
+    symbol_state_div = dfa.add_state(True,False,"SYMBOL")
     dfa.add_edge(dfa.start_node,symbol_state_div,["/"])
     dfa.add_edge(symbol_state_div,dfa.basic_trap,White_spaces+English_aphabet+Digits+get_except(Symbols , ['*']))
     dfa.add_edge(symbol_state_div,error_invalid_input,Illegal)

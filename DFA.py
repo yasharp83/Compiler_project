@@ -42,7 +42,7 @@ class DFA:
         return
     
     def get_new_state(self,edge):
-        return self.transition[self.current_state][edge]
+        return self.states[self.transition[self.current_state][edge]]
     
     def change_state(self,edge):
         self.current_state = self.transition[self.current_state][edge]

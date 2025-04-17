@@ -9,7 +9,6 @@ class Tokens:
             print(f"an error occurred while creating the file{self.file_path}")
     
     def add(self,no_line , token):
-        #TODO
         try : 
             self.tokens[no_line].append(token)
         except:
@@ -22,7 +21,7 @@ class Tokens:
                 for line in self.tokens.keys():
                     f.write(f"{line}\t")
                     for token in self.tokens[line]:
-                        f.write(f" {token}")
+                        f.write(f" ({token[0]}, {token[1]})")
                     f.write("\n")
                 
         except:
