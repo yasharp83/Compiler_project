@@ -46,7 +46,7 @@ class DFA:
     
     def change_state(self,edge):
         self.current_state = self.transition[self.current_state][edge]
-        return
+        return self.states[self.current_state]
 
     def get_current_node(self):
         return self.states[self.current_state]

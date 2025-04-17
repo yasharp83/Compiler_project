@@ -3,7 +3,7 @@ import DFA
 Keywords = ["if" , "else" , "void" , "int" , "while" , "break" , "return"]
 Symbols = [';' , ':' , ',' , '[' , ']' , '(' , ')' , '{' , '}' , '+' , '-' , '*' , '/' , '\\' , '=' , '=' , '>' , '<']
 White_spaces = [chr(32),chr(10),chr(9),chr(13),chr(11),chr(12)]
-Digits = [i for i in range(10)]
+Digits = [chr(i) for i in range(48,58)]
 English_aphabet = [chr(i) for i in (list(range(65,91)) + list(range(97,123)))]
 Illegal = []
 for i in range(128):
@@ -50,7 +50,7 @@ def init_dfa():
     symbol_state_eqeq = dfa.add_state(True,False,"SYMBOL==")
     dfa.add_edge(dfa.start_node,symbol_state_eq,["="])
     dfa.add_edge(symbol_state_eq,symbol_state_eqeq,["="])
-    dfa.add_edge(symbol_state_eq,dfa.basic_trap,sigma)
+    dfa.add_edge(symbol_state_eq,dfa.basic_trap,get_except(sigma , ["="]))
     dfa.add_edge(symbol_state_eqeq,dfa.basic_trap,sigma)
 
     #handling /
@@ -65,7 +65,7 @@ def init_dfa():
     comment_state_2 = dfa.add_state(False,False,"ERROR_UNCLOSED_COMMENT")
     comment_state_3 = dfa.add_state(True,False,"CLOSED_COMMENT")
     dfa.add_edge(symbol_state_div,comment_state_1,['*'])
-    dfa.add_edge(symbol_state_div,comment_state_1,get_except(sigma,['*']))
+    dfa.add_edge(comment_state_1,comment_state_1,get_except(sigma,['*']))
     dfa.add_edge(comment_state_1,comment_state_2,['*'])
     dfa.add_edge(comment_state_2,comment_state_1,get_except(sigma,['/']))
     dfa.add_edge(comment_state_2,comment_state_3,['/'])
@@ -84,6 +84,9 @@ def init_dfa():
     dfa.add_edge(id_state_1,dfa.basic_trap,White_spaces+Symbols)
     dfa.add_edge(id_state_1,error_invalid_input,Illegal)
 
+    #Illegals
+    for illegal in Illegal:
+        dfa.add_edge(dfa.start_node,error_invalid_input,illegal)
 
 
     return dfa
