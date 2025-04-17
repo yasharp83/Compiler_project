@@ -8,19 +8,21 @@ class DFA:
     def __init__(self):
         self.alphabet = [chr(i) for i in range(128)]
 
-        self.states = {0:DFA.Node(False , False,"START") , 1:DFA.node(False , True , "TRAP_BASIC")}
+        self.states = {0:DFA.Node(False , False,"START") , 1:DFA.Node(False , True , "TRAP_BASIC")}
 
         self.transition = {}
-
-        for v in self.states.keys:
-            self.transition[v] = {}
-            for edge in self.alphabet : 
-                self.transition[v][edge] = self.basic_trap
 
         self.current_state = 0
         self.start_node = 0
         self.basic_trap = 1
         self.num_nodes = 2
+
+        for v in self.states.keys():
+            self.transition[v] = {}
+            for edge in self.alphabet : 
+                self.transition[v][edge] = self.basic_trap
+
+
 
     def reset(self): 
         self.current_state = self.start_node
@@ -28,6 +30,7 @@ class DFA:
 
     def add_state(self,accept:bool , trap:bool , status:str):
         self.states[self.num_nodes] = DFA.Node(accept, trap , status)
+        self.transition[self.num_nodes] = {}
         for edge in self.alphabet : 
             self.transition[self.num_nodes][edge] = self.basic_trap
         self.num_nodes+=1
