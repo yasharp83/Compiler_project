@@ -42,9 +42,13 @@ class DFA:
         return
     
     def get_new_state(self,edge):
+        if ord(edge) > 255 : 
+            edge = chr(255)
         return self.states[self.transition[self.current_state][edge]]
     
     def change_state(self,edge):
+        if ord(edge) > 255 : 
+            edge = chr(255)
         self.current_state = self.transition[self.current_state][edge]
         return self.states[self.current_state]
 
