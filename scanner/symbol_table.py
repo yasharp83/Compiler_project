@@ -1,7 +1,10 @@
+from alphabet_config import Keywords
 class SymbolTable:
     def __init__(self,file_path="symbol_table.txt"):
         self.file_path = file_path
         self.symbols = []
+        for keyword in Keywords : 
+            self.symbols.append(keyword)
         try:
             with open(file_path, 'a'):
                 pass 
