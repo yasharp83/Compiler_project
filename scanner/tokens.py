@@ -19,7 +19,7 @@ class Tokens:
         try:
             with open(self.file_path, 'w') as f:
                 for line in self.tokens.keys():
-                    f.write(f"{line}\t")
+                    f.write(f"{line}.\t")
                     for token in self.tokens[line]:
                         f.write(f" ({token[0]}, {token[1]})")
                     f.write("\n")

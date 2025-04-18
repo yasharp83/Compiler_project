@@ -53,7 +53,7 @@ def init_dfa():
     #hanlding comment state /*
     comment_state_1 = dfa.add_state(False,False,"ERROR_UNCLOSED_COMMENT")
     comment_state_2 = dfa.add_state(False,False,"ERROR_UNCLOSED_COMMENT")
-    comment_state_3 = dfa.add_state(True,False,"CLOSED_COMMENT")
+    comment_state_3 = dfa.add_state(True,False,"COMMENT_CLOSED")
     dfa.add_edge(symbol_state_div,comment_state_1,['*'])
     dfa.add_edge(comment_state_1,comment_state_1,get_except(sigma,['*']))
     dfa.add_edge(comment_state_1,comment_state_2,['*'])

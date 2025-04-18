@@ -28,11 +28,14 @@ class LexicalErrors:
         try:
             with open(self.file_path, 'w') as f:
                 if not self.error_occured : 
-                    f.write("There is no lexical error\n")
+                    f.write("There is no lexical error.\n")
                 for line in self.errors.keys():
-                    f.write(f"{line}\t")
+                    f.write(f"{line}.\t")
                     for error in self.errors[line]:
-                        f.write(f" ({error[1]}, {error_massages[error[0]]})")
+                        txt = error[1]
+                        if error[0]=="ERROR_UNCLOSED_COMMENT":
+                            if len(txt) > 7 : txt = txt[0:7] +"..."
+                        f.write(f" ({txt}, {error_massages[error[0]]})")
                     f.write("\n")
         except:
             print(f"an error occurred while updating the file{self.file_path}")

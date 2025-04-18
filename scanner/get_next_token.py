@@ -32,7 +32,7 @@ def get_next_token(buffer:BufferedFileReader , dfa:DFA , lexical_errors:LexicalE
             lexical_errors.add(start_line,[new_state.status , token])
             return get_next_token(buffer,dfa,lexical_errors,tokens,symbol_table)
         
-        if new_state.trap and dfa.get_current_node().accept and dfa.get_current_node().status!="COMMENT":
+        if new_state.trap and dfa.get_current_node().accept and dfa.get_current_node().status[0:7]!="COMMENT":
             if is_keyword(token) : 
                 handle_token(["KEYWORD" , token] , start_line , tokens , symbol_table , add_tokens , add_symbols)
                 return  ["KEYWORD" , token]
@@ -40,7 +40,7 @@ def get_next_token(buffer:BufferedFileReader , dfa:DFA , lexical_errors:LexicalE
                 handle_token([dfa.get_current_node().status,token] , start_line , tokens , symbol_table , add_tokens , add_symbols)
                 return [dfa.get_current_node().status,token]
         
-        if new_state.trap and dfa.get_current_node().accept and dfa.get_current_node().status=="COMMENT":
+        if new_state.trap and dfa.get_current_node().accept and dfa.get_current_node().status[0:7]=="COMMENT":
             return get_next_token(buffer,dfa,lexical_errors,tokens,symbol_table)
         
         dfa.change_state(new_char)
