@@ -40,7 +40,8 @@ def init_dfa():
     symbol_state_eqeq = dfa.add_state(True,False,"SYMBOL")
     dfa.add_edge(dfa.start_node,symbol_state_eq,["="])
     dfa.add_edge(symbol_state_eq,symbol_state_eqeq,["="])
-    dfa.add_edge(symbol_state_eq,dfa.basic_trap,get_except(sigma , ["="]))
+    dfa.add_edge(symbol_state_eq,dfa.basic_trap,get_except(sigma , ["="]+Illegal))
+    dfa.add_edge(symbol_state_eq,error_invalid_input,Illegal)
     dfa.add_edge(symbol_state_eqeq,dfa.basic_trap,sigma)
 
     #handling /
