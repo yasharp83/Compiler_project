@@ -6,7 +6,7 @@ class DFA:
             self.trap = trap
             self.status = status
     def __init__(self):
-        self.alphabet = [chr(i) for i in range(128)]
+        self.alphabet = [chr(i) for i in range(256)]
 
         self.states = {0:DFA.Node(False , False,"START") , 1:DFA.Node(False , True , "TRAP_BASIC")}
 
