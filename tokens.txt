@@ -1,0 +1,4 @@
+2.	 (KEYWORD, void) (ID, main) (SYMBOL, () (KEYWORD, void) (SYMBOL, )) (SYMBOL, {)
+3.	 (KEYWORD, int) (ID, x) (SYMBOL, ;)
+4.	 (ID, x) (SYMBOL, =) (NUM, 10) (SYMBOL, ;)
+5.	 (SYMBOL, })
