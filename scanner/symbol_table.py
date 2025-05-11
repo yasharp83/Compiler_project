@@ -27,6 +27,35 @@ class SymbolTable:
         except:
             print(f"an error occurred while updating the file{self.file_path}")
 
-    #TODO : next phase
-    def read_file(self,file_path):
-        pass
+    def read_file(self, file_path=None):
+        """
+        Read symbols from a file formatted as:
+        1.    symbol1
+        2.    symbol2
+        etc.
+        """
+        if file_path is None:
+            file_path = self.file_path
+            
+        try:
+            # Keep keywords but reset other symbols
+            self.symbols = [symbol for symbol in self.symbols if symbol in Keywords]
+            
+            with open(file_path, 'r') as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    
+                    parts = line.strip().split('\t')
+                    if len(parts) < 2:
+                        continue
+                    
+                    # Extract symbol (ignore index)
+                    symbol = parts[1].strip()
+                    if symbol and symbol not in self.symbols:
+                        self.symbols.append(symbol)
+                        
+            return True
+        except Exception as e:
+            print(f"An error occurred while reading the file {file_path}: {e}")
+            return False
