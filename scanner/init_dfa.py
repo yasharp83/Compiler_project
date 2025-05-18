@@ -1,5 +1,5 @@
-import DFA
-from alphabet_config import *
+from . import DFA
+from .alphabet_config import *
 
 def get_except(L1,L2):
     return [i for i in L1 if i not in L2]

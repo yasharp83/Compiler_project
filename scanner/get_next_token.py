@@ -1,9 +1,9 @@
-from buffer import BufferedFileReader
-from DFA import DFA
-from tokens import Tokens
-from lexical_errors import LexicalErrors
-from symbol_table import SymbolTable
-from alphabet_config import is_keyword
+from .buffer import BufferedFileReader
+from .DFA import DFA
+from .tokens import Tokens
+from .lexical_errors import LexicalErrors
+from .symbol_table import SymbolTable
+from .alphabet_config import is_keyword
 
 
 def get_next_token(buffer:BufferedFileReader , dfa:DFA , lexical_errors:LexicalErrors , tokens:Tokens , symbol_table:SymbolTable , add_tokens=True , add_symbols=True):
