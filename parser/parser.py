@@ -1,5 +1,5 @@
-from tokens import Tokens
-from symbol_table import SymbolTable
+from ..scanner.tokens import Tokens
+from ..scanner.symbol_table import SymbolTable
 
 class Parser:
     def __init__(self, tokens_file_path="tokens.txt", symbol_table_file_path="symbol_table.txt",
