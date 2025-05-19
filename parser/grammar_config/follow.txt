@@ -1,0 +1,47 @@
+AdditiveExpression ) , ; ]
+AdditiveExpressionPrime ) , ; < == ]
+AdditiveExpressionZegond ) , ; < == ]
+Addop ( + - ID NUM
+ArgList )
+ArgListPrime )
+Args )
+B ) , ; ]
+C ) , ; ]
+CompoundStmt $ ( + - ; ID NUM break else if int return void while { }
+D ) , ; < == ]
+Declaration $ ( + - ; ID NUM break if int return void while { }
+DeclarationInitial ( ) , ; [
+DeclarationList $ ( + - ; ID NUM break if return while { }
+DeclarationPrime $ ( + - ; ID NUM break if int return void while { }
+Expression ) , ; ]
+ExpressionStmt ( + - ; ID NUM break else if return while { }
+Factor ) * + , - ; < == ]
+FactorPrime ) * + , - ; < == ]
+FactorZegond ) * + , - ; < == ]
+FunDeclarationPrime $ ( + - ; ID NUM break if int return void while { }
+G ) + , - ; < == ]
+H ) , ; ]
+IterationStmt ( + - ; ID NUM break else if return while { }
+Param ) ,
+ParamList )
+ParamPrime ) ,
+Params )
+Program $
+Relop ( + - ID NUM
+ReturnStmt ( + - ; ID NUM break else if return while { }
+ReturnStmtPrime ( + - ; ID NUM break else if return while { }
+SelectionStmt ( + - ; ID NUM break else if return while { }
+SignedFactor ) * + , - ; < == ]
+SignedFactorPrime ) * + , - ; < == ]
+SignedFactorZegond ) * + , - ; < == ]
+SimpleExpressionPrime ) , ; ]
+SimpleExpressionZegond ) , ; ]
+Statement ( + - ; ID NUM break else if return while { }
+StatementList }
+Term ) + , - ; < == ]
+TermPrime ) + , - ; < == ]
+TermZegond ) + , - ; < == ]
+TypeSpecifier ID
+VarCallPrime ) * + , - ; < == ]
+VarDeclarationPrime $ ( + - ; ID NUM break if int return void while { }
+VarPrime ) * + , - ; < == ]

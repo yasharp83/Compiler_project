@@ -1,0 +1,47 @@
+AdditiveExpression ( + - ID NUM
+AdditiveExpressionPrime ( * + - EPSILON
+AdditiveExpressionZegond ( + - NUM
+Addop + -
+ArgList ( + - ID NUM
+ArgListPrime , EPSILON
+Args ( + - ID NUM EPSILON
+B ( * + - < = == [ EPSILON
+C < == EPSILON
+CompoundStmt {
+D + - EPSILON
+Declaration int void
+DeclarationInitial int void
+DeclarationList int void EPSILON
+DeclarationPrime ( ; [
+Expression ( + - ID NUM
+ExpressionStmt ( + - ; ID NUM break
+Factor ( ID NUM
+FactorPrime ( EPSILON
+FactorZegond ( NUM
+FunDeclarationPrime (
+G * EPSILON
+H * + - < = == EPSILON
+IterationStmt while
+Param int void
+ParamList , EPSILON
+ParamPrime [ EPSILON
+Params int void
+Program int void EPSILON
+Relop < ==
+ReturnStmt return
+ReturnStmtPrime ( + - ; ID NUM
+SelectionStmt if
+SignedFactor ( + - ID NUM
+SignedFactorPrime ( EPSILON
+SignedFactorZegond ( + - NUM
+SimpleExpressionPrime ( * + - < == EPSILON
+SimpleExpressionZegond ( + - NUM
+Statement ( + - ; ID NUM break if return while {
+StatementList ( + - ; ID NUM break if return while { EPSILON
+Term ( + - ID NUM
+TermPrime ( * EPSILON
+TermZegond ( + - NUM
+TypeSpecifier int void
+VarCallPrime ( [ EPSILON
+VarDeclarationPrime ; [
+VarPrime [ EPSILON
