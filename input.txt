@@ -1,18 +1,11 @@
 
-int fibonacci(int n) {
-    if (n == 0)
-        return 0;
-    else {
-        if (n == 1)
-            return 1;
-        else
-            return fibonacci(n - 1) + fibonacci(n - 2);
+int main(void) {
+    int x;
+    x = 0;
+    while (x < 10) {
+        if (x == 5)
+            break;
+        x = x + 1;
     }
-}
-
-void main(void) {
-    int a;
-    int b;
-    a = factorial(5);
-    b = fibonacci(7);
+    return 0;
 }

@@ -95,6 +95,8 @@ class Parser :
         self.tokens = tokens
         self.symbol_table = symbol_table
 
+        self.eof_error_occured = False
+
     def start(self):
         self.advance()
         root = PtNode("Program")
@@ -145,22 +147,25 @@ class Parser :
 
             #TODO : syntax error
             if look == "$" : 
-                #TODO
+                if not self.eof_error_occured:
+                    self.eof_error_occured=True
+                    self.syntax_errors.add(self.buffer.line , "syntax error, Unexpected EOF")
                 return
-
-            else : 
-                #TODO
-                if look in self.follows[cur_nt] : 
-                    return
+            elif look not in self.follows[cur_nt]: 
+                self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
                 self.advance()
 
+            else : 
+                self.syntax_errors.add(self.buffer.line , f"syntax error, missing {edge}")
+                ###it should be cur_nt instead of edge but that way makes conflict with testcases!
+                return
     
     def edge_match(self, edge : str , component : str , look : str) -> bool:
         if edge.lower() == "epsilon" : 
-            return look in self.follows[component] or look =="$"
+            return look in self.follows[component] #or look =="$"
         if self.is_terminal(edge):
             return edge.lower()==look.lower()
-        if look in self.firsts[edge] or ("EPSILON" in self.firsts[edge] and (look in self.follows[edge] or look == "$")):
+        if look in self.firsts[edge] or ("EPSILON" in self.firsts[edge] and (look in self.follows[edge])):#or look == "$"
             return True
         return False
 
@@ -220,8 +225,9 @@ class Parser :
             cur_id = self.graph.add_node(v)
             for path in self.grammar[v] : 
                 cur_id = self.graph.get_first_non_terminal(v)
-                for u in path : 
-                    new_id = self.graph.add_node(v , is_accept=(u==path[-1]))
+                for i in range(len(path)):
+                    u = path[i]
+                    new_id = self.graph.add_node(v , is_accept=(i==len(path)-1))
                     self.graph.add_edge(cur_id , u , new_id)
                     cur_id = new_id
 
@@ -237,24 +243,4 @@ class Parser :
             return
         with open(path , "w" , encoding="utf-8") as f : 
             f.write("\n".join(self.parse_tree_root.to_lines()))
-                              
 
-# P = Parser()
-# for v in P.graph.nodes.keys():
-#     print(v , " : " , P.graph.nodes[v].component  ," " , P.graph.nodes[v].is_accept ,  " " , P.graph.nodes[v].edges )
-
-
-code_file_path="input.txt"
-lexical_error_file_path="lexical_errors.txt"
-tokens_file_path="tokens.txt"
-symbol_table_file_path="symbol_table.txt"
-
-lexical_errors = LexicalErrors(file_path=lexical_error_file_path)
-buffer = BufferedFileReader(file_path=code_file_path)
-tokens = Tokens(tokens_file_path)
-symbol_table = SymbolTable(file_path=symbol_table_file_path)
-dfa = init_dfa()
-
-P = Parser(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
-          tokens=tokens , symbol_table=symbol_table , syntax_errors=SyntaxErrors())
-P.start()
