@@ -46,11 +46,18 @@ class PtNode:
     def add_children(self,child : "PtNode"):
         self.children.append(child)
     
-    def to_lines(self, depth: int = 0) -> list[str]:
-        indent = "\t" * depth
-        lines = [f"{indent}{self.label}"]
-        for child in self.children:
-            lines.extend(child.to_lines(depth + 1))
+    def to_lines(self,prefix : str = '' , is_last : bool = True) -> list[str]:
+        joint = joint = '└── ' if is_last else '├── '
+        if self.label == "Program" : 
+            joint = ''
+        line  = prefix + joint + self.label
+        lines = [line]
+        child_prefix = prefix + ('    ' if is_last else '│   ')
+        if self.label == "Program" : 
+            child_prefix = prefix
+        for i, child in enumerate(self.children):
+            last = i ==(len(self.children) - 1)
+            lines.extend(child.to_lines(child_prefix, last))
         return lines
     
 class Parser : 
@@ -114,7 +121,7 @@ class Parser :
             for edge , dest in cur_node.edges : 
                 if self.edge_match(edge , cur_nt , look) : 
                     if edge.lower()=="epsilon" : 
-                        pt_par.add_children(PtNode("EPSILON"))
+                        pt_par.add_children(PtNode("epsilon"))
                         cur_node = self.graph.nodes[dest]
                         progressed = True
                         break
