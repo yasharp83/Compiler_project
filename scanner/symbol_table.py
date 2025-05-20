@@ -1,4 +1,4 @@
-from .alphabet_config import Keywords
+from scanner.alphabet_config import Keywords
 class SymbolTable:
     def __init__(self,file_path="symbol_table.txt"):
         self.file_path = file_path

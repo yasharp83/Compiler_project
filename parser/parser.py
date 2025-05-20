@@ -1,19 +1,27 @@
+from parser.syntax_errors import SyntaxErrors
+from scanner.buffer import BufferedFileReader
+from scanner.DFA import DFA
+from scanner.tokens import Tokens
+from scanner.lexical_errors import LexicalErrors
+from scanner.symbol_table import SymbolTable
+from scanner.get_next_token import get_next_token
+from scanner.init_dfa import init_dfa
 class TdNode:
-    def __init__(self ,component , id , is_accept = False):
+    def __init__(self ,component: str , id : int , is_accept : bool = False):
         self.id = id
         self.component = component
         self.is_accept = is_accept
         self.edges = []
-    def add_edge(self , edge , dest):
+    def add_edge(self , edge: str , dest : int):
         self.edges.append((edge , dest))
 
 class TdGraph:
     def __init__(self):
-        self.non_terminal_first = {}
-        self.cur_id = 0
-        self.nodes = {}
+        self.non_terminal_first : dict[str , int] = {}
+        self.cur_id : int = 0
+        self.nodes : dict[int , TdNode] = {}
 
-    def add_node(self , component , is_accept = False):
+    def add_node(self , component : str , is_accept : bool = False) -> int:
         self.cur_id+=1
         node = TdNode(component=component , id = self.cur_id ,  is_accept=is_accept)
         if component not in self.non_terminal_first : 
@@ -21,31 +29,154 @@ class TdGraph:
         self.nodes[self.cur_id] = node
         return self.cur_id
 
-    def add_edge(self , start , edge , dest):
+    def add_edge(self , start: int , edge : str, dest : int):
         self.nodes[start].add_edge(edge , dest)
     
-    def get_first_non_terminal(self , component) : 
+    def get_first_non_terminal(self , component : str) -> int: 
         try : 
             return self.non_terminal_first[component]
         except:
             return  -1
 
+class PtNode:
+    def __init__(self,label : str):
+        self.label = label
+        self.children : list[PtNode] = []
+    
+    def add_children(self,child : "PtNode"):
+        self.children.append(child)
+    
+    def to_lines(self, depth: int = 0) -> list[str]:
+        indent = "\t" * depth
+        lines = [f"{indent}{self.label}"]
+        for child in self.children:
+            lines.extend(child.to_lines(depth + 1))
+        return lines
+    
 class Parser : 
-    def __init__(self , grammar_path = "parser/grammar_config/grammar.txt"
-                      , follow_path = "parser/grammar_config/follow.txt"
-                      , first_path  = "parser/grammar_config/first.txt"
+    def __init__(self , buffer:BufferedFileReader 
+                      , dfa:DFA 
+                      , lexical_errors:LexicalErrors 
+                      , tokens:Tokens 
+                      , symbol_table:SymbolTable 
+                      , syntax_errors : SyntaxErrors 
+                      , grammar_path : str = "parser/grammar_config/grammar.txt"
+                      , follow_path : str = "parser/grammar_config/follow.txt"
+                      , first_path : str = "parser/grammar_config/first.txt" 
                  ):
 
-        self.nonTerminals = []
-        self.terminals = []
+        self.nonTerminals : list[str] = []
+        self.terminals : list[str] = []
         self.grammar = self.load_grammar(grammar_path) 
         self.follows = self.load_follow_first(follow_path)
         self.firsts = self.load_follow_first(first_path)
 
-        self.graph = TdGraph()
+        self.graph : TdGraph = TdGraph()
         self.makeTdGraph()
 
-    def load_grammar(self , path):
+        self.cur_symbol : str = None
+        self.cur_token = None
+        
+        self.parse_tree_root : PtNode = None
+
+        self.syntax_errors = syntax_errors
+
+        #get_next_token stuff
+        self.buffer = buffer
+        self.dfa = dfa 
+        self.lexical_errors = lexical_errors
+        self.tokens = tokens
+        self.symbol_table = symbol_table
+
+    def start(self):
+        self.advance()
+        root = PtNode("Program")
+        self.parse_nontermianl("Program" , root)
+        
+        if self.cur_symbol=="$":
+            root.children.append(PtNode("$"))
+            self.advance()  
+        self.parse_tree_root = root
+        self.write_tree()
+        self.syntax_errors.update_file()
+
+
+    def parse_nontermianl(self , cur_nt : str , pt_par : PtNode):
+        node_id = self.graph.get_first_non_terminal(cur_nt)
+        cur_node= self.graph.nodes[node_id]
+        while True : 
+            if cur_node.is_accept : 
+                return
+            
+            look = self.cur_symbol
+            progressed = False
+
+            for edge , dest in cur_node.edges : 
+                if self.edge_match(edge , cur_nt , look) : 
+                    if edge.lower()=="epsilon" : 
+                        pt_par.add_children(PtNode("EPSILON"))
+                        cur_node = self.graph.nodes[dest]
+                        progressed = True
+                        break
+                    
+                    if edge in self.terminals:
+                        pt_par.add_children(PtNode(self.leaf_repr()))
+                        self.advance()
+                        cur_node = self.graph.nodes[dest]
+                        progressed = True
+                        break
+
+                    child = PtNode(edge)
+                    pt_par.add_children(child)
+                    self.parse_nontermianl(edge , child)
+                    cur_node = self.graph.nodes[dest]
+                    progressed = True
+                    break
+
+            if progressed : 
+                continue
+
+            #TODO : syntax error
+            if look == "$" : 
+                #TODO
+                return
+
+            else : 
+                #TODO
+                if look in self.follows[cur_nt] : 
+                    return
+                self.advance()
+
+    
+    def edge_match(self, edge : str , component : str , look : str) -> bool:
+        if edge.lower() == "epsilon" : 
+            return look in self.follows[component] or look =="$"
+        if self.is_terminal(edge):
+            return edge.lower()==look.lower()
+        if look in self.firsts[edge] or ("EPSILON" in self.firsts[edge] and (look in self.follows[edge] or look == "$")):
+            return True
+        return False
+
+    
+    def advance(self):
+        tok = self._get_next_token()
+        if tok[0].lower()=="white" : 
+            self.advance()
+            return
+        self.cur_token = tok
+        self.cur_symbol = self.token_to_symbol(tok)
+
+    def token_to_symbol(self,tok) -> str:
+        if tok[0].lower()=="keyword" or tok[0].lower()=="symbol" : 
+            return tok[1]
+        return tok[0]
+    
+    def leaf_repr(self) -> str : 
+        if self.cur_symbol=="$" : 
+            return "$"
+        return f"({self.cur_token[0]}, {self.cur_token[1]}) "
+
+    def load_grammar(self , path : str) -> dict[str , list[list[str]]]:
         d = {}
         with open(path , "r" , encoding="utf8") as f : 
             for line in f :
@@ -69,7 +200,7 @@ class Parser :
                 self.terminals.remove(i)
         return d
     
-    def load_follow_first(self , path):
+    def load_follow_first(self , path : str) -> dict[str , list[str]]:
         d = {}
         with open(path , "r" , encoding="utf8") as f : 
             for line in f : 
@@ -87,6 +218,36 @@ class Parser :
                     self.graph.add_edge(cur_id , u , new_id)
                     cur_id = new_id
 
-P = Parser()
-for v in P.graph.nodes.keys():
-    print(v , " : " , P.graph.nodes[v].component  ," " , P.graph.nodes[v].is_accept ,  " " , P.graph.nodes[v].edges )
+    def is_terminal(self , token : str) -> bool:
+        return token in self.terminals
+    
+    def _get_next_token(self):
+        return get_next_token(buffer=self.buffer , dfa=self.dfa , lexical_errors=self.lexical_errors , 
+                              tokens=self.tokens , symbol_table=self.symbol_table)
+    
+    def write_tree(self , path="parse_tree.txt"):
+        if not self.parse_tree_root:
+            return
+        with open(path , "w" , encoding="utf-8") as f : 
+            f.write("\n".join(self.parse_tree_root.to_lines()))
+                              
+
+# P = Parser()
+# for v in P.graph.nodes.keys():
+#     print(v , " : " , P.graph.nodes[v].component  ," " , P.graph.nodes[v].is_accept ,  " " , P.graph.nodes[v].edges )
+
+
+code_file_path="input.txt"
+lexical_error_file_path="lexical_errors.txt"
+tokens_file_path="tokens.txt"
+symbol_table_file_path="symbol_table.txt"
+
+lexical_errors = LexicalErrors(file_path=lexical_error_file_path)
+buffer = BufferedFileReader(file_path=code_file_path)
+tokens = Tokens(tokens_file_path)
+symbol_table = SymbolTable(file_path=symbol_table_file_path)
+dfa = init_dfa()
+
+P = Parser(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
+          tokens=tokens , symbol_table=symbol_table , syntax_errors=SyntaxErrors())
+P.start()

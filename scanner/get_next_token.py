@@ -1,15 +1,15 @@
-from .buffer import BufferedFileReader
-from .DFA import DFA
-from .tokens import Tokens
-from .lexical_errors import LexicalErrors
-from .symbol_table import SymbolTable
-from .alphabet_config import is_keyword
+from scanner.buffer import BufferedFileReader
+from scanner.DFA import DFA
+from scanner.tokens import Tokens
+from scanner.lexical_errors import LexicalErrors
+from scanner.symbol_table import SymbolTable
+from scanner.alphabet_config import is_keyword
 
 
 def get_next_token(buffer:BufferedFileReader , dfa:DFA , lexical_errors:LexicalErrors , tokens:Tokens , symbol_table:SymbolTable , add_tokens=True , add_symbols=True):
     dfa.reset()
     if not buffer.has_next() : 
-        return False
+        return ["$" , "$"]
     token = ""
     start_line = buffer.check_next_char()[1]
     while True : 

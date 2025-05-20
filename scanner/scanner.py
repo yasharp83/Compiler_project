@@ -1,9 +1,9 @@
-from .init_dfa import init_dfa
-from .symbol_table import SymbolTable
-from .tokens import Tokens
-from .lexical_errors import LexicalErrors
-from .buffer import BufferedFileReader
-from .get_next_token import get_next_token
+from scanner.init_dfa import init_dfa
+from scanner.symbol_table import SymbolTable
+from scanner.tokens import Tokens
+from scanner.lexical_errors import LexicalErrors
+from scanner.buffer import BufferedFileReader
+from scanner.get_next_token import get_next_token
 
 def scanner(code_file_path , lexical_error_file_path="lexical_errors.txt" , tokens_file_path="tokens.txt" , symbol_table_file_path="symbol_table.txt"):
     lexical_errors = LexicalErrors(file_path=lexical_error_file_path)
@@ -15,7 +15,7 @@ def scanner(code_file_path , lexical_error_file_path="lexical_errors.txt" , toke
     while True : 
         new_token = get_next_token(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
                                    tokens=tokens , symbol_table=symbol_table)
-        if not new_token : 
+        if new_token[0]=="$" : 
             break
     lexical_errors.update_file()
     tokens.update_file()
