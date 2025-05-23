@@ -53,3 +53,12 @@ dfa = init_dfa()
 P = Parser(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
           tokens=tokens , symbol_table=symbol_table , syntax_errors=SyntaxErrors())
 P.start()
+lexical_errors.update_file()
+tokens.update_file()
+symbol_table.update_file()
+# for key in P.grammar : 
+#     print(key , P.grammar[key])
+
+
+# for key in P.graph.nodes : 
+#     print(key , P.graph.nodes[key].component , P.graph.nodes[key].edges)

@@ -5,5 +5,8 @@
 5.	while
 6.	break
 7.	return
-8.	main
-9.	x
+8.	sum
+9.	arr
+10.	size
+11.	total
+12.	i

@@ -102,9 +102,9 @@ class Parser :
         root = PtNode("Program")
         self.parse_nontermianl("Program" , root)
         
-        if self.cur_symbol=="$":
-            root.children.append(PtNode("$"))
-            self.advance()  
+        
+        root.children.append(PtNode("$"))
+
         self.parse_tree_root = root
         self.write_tree()
         self.syntax_errors.update_file()
@@ -158,7 +158,7 @@ class Parser :
             else : 
                 self.syntax_errors.add(self.buffer.line , f"syntax error, missing {edge}")
                 ###it should be cur_nt instead of edge but that way makes conflict with testcases!
-                return
+                cur_node = self.graph.nodes[dest]
     
     def edge_match(self, edge : str , component : str , look : str) -> bool:
         if edge.lower() == "epsilon" : 
