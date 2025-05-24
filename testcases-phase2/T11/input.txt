@@ -1,0 +1,7 @@
+void main(void) {
+  int x = 3;
+  x = x + 2;
+  if (x < 5) {
+    return;
+  }
+}

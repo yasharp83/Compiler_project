@@ -1,0 +1,15 @@
+Program
+	DeclarationList
+		Declaration
+			DeclarationInitial
+				TypeSpecifier
+					(KEYWORD, int)
+				(ID, func)
+			DeclarationPrime
+				FunDeclarationPrime
+					(SYMBOL, ()
+					Params
+						(KEYWORD, void)
+		DeclarationList
+			epsilon
+	$

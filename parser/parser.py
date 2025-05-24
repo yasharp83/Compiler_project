@@ -100,7 +100,7 @@ class Parser :
     def start(self):
         self.advance()
         root = PtNode("Program")
-        self.parse_nontermianl("Program" , root)
+        self.parse_nonterminal("Program" , root)
         
         
         root.children.append(PtNode("$"))
@@ -110,13 +110,10 @@ class Parser :
         self.syntax_errors.update_file()
 
 
-    def parse_nontermianl(self , cur_nt : str , pt_par : PtNode):
+    def parse_nonterminal(self , cur_nt : str , pt_par : PtNode):
         node_id = self.graph.get_first_non_terminal(cur_nt)
         cur_node= self.graph.nodes[node_id]
-        while True : 
-            if cur_node.is_accept : 
-                return
-            
+        if len(cur_node.edges) > 1 : 
             look = self.cur_symbol
             progressed = False
 
@@ -137,27 +134,61 @@ class Parser :
 
                     child = PtNode(edge)
                     pt_par.add_children(child)
-                    self.parse_nontermianl(edge , child)
+                    self.parse_nonterminal(edge , child)
                     cur_node = self.graph.nodes[dest]
                     progressed = True
                     break
+            
+            if not progressed : 
 
-            if progressed : 
+                if look == "$" : 
+                    if not self.eof_error_occured:
+                        self.eof_error_occured=True
+                        self.syntax_errors.add(self.buffer.line , "syntax error, Unexpected EOF")
+                    return True
+                elif look not in self.follows[cur_nt]: 
+                    self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
+                    self.advance()
+
+                else : 
+                    self.syntax_errors.add(self.buffer.line , f"syntax error, missing {cur_nt}")
+                    return False
+
+
+        while True : 
+            if cur_node.is_accept : 
+                return True
+            
+            look = self.cur_symbol
+
+            edge , dest = cur_node.edges[0]
+            #print(cur_nt , " " , edge , " " , look)
+            if self.edge_match(edge , cur_nt , look) : 
+                #print("koobs")
+                if edge in self.terminals:
+                    pt_par.add_children(PtNode(self.leaf_repr()))
+                    self.advance()
+                    cur_node = self.graph.nodes[dest]
+                    continue
+
+                child = PtNode(edge)
+                pt_par.add_children(child)
+                self.parse_nonterminal(edge , child)
+                cur_node = self.graph.nodes[dest]
                 continue
-
-            #TODO : syntax error
             if look == "$" : 
                 if not self.eof_error_occured:
                     self.eof_error_occured=True
                     self.syntax_errors.add(self.buffer.line , "syntax error, Unexpected EOF")
-                return
-            elif look not in self.follows[cur_nt]: 
+                return True
+            elif self.is_terminal(edge) and look not in self.follows[cur_nt]: 
                 self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
                 self.advance()
-
-            else : 
+            elif not self.is_terminal(edge) and look not in self.follows[edge]:
+                self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
+                self.advance()
+            else :
                 self.syntax_errors.add(self.buffer.line , f"syntax error, missing {edge}")
-                ###it should be cur_nt instead of edge but that way makes conflict with testcases!
                 cur_node = self.graph.nodes[dest]
     
     def edge_match(self, edge : str , component : str , look : str) -> bool:

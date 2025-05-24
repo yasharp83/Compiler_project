@@ -1,0 +1,5 @@
+#1 : syntax error, illegal ]
+#1 : syntax error, missing Params
+#2 : syntax error, illegal =
+#3 : syntax error, illegal NUM
+#7 : syntax error, Unexpected EOF

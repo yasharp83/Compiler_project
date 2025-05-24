@@ -16,7 +16,7 @@ def get_next_token(buffer:BufferedFileReader , dfa:DFA , lexical_errors:LexicalE
         if not buffer.has_next() :
             if len(dfa.get_current_node().status) >= 5 and dfa.get_current_node().status[0:5]=="ERROR" : 
                 lexical_errors.add(start_line,[dfa.get_current_node().status , token])
-                return False
+                return ["$" , "$"]
             if is_keyword(token) :
                 handle_token(["KEYWORD" , token] , start_line , tokens , symbol_table , add_tokens , add_symbols)
                 return  ["KEYWORD" , token]

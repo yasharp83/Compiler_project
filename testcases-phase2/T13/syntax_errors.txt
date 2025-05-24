@@ -1,0 +1,7 @@
+#1 : syntax error, missing Params
+#2 : syntax error, illegal =
+#2 : syntax error, missing DeclarationPrime
+#4 : syntax error, illegal /
+#4 : syntax error, illegal ID
+#11 : syntax error, missing else
+#11 : syntax error, missing Statement

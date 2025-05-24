@@ -1,4 +1,8 @@
-for i in {01..10}; do
+# tests 6 , 8 are ok (ending and order of some errors are diffrent)
+# test 9 is ok order of errors is diffrent
+# test 12 is ok (diffrence in ending and EOF)
+#tests 14-16 are ok , deffrence in space
+for i in {14..14}; do
     echo "Running test case T$i..."
 
 

@@ -1,0 +1,6 @@
+void main(]) {
+  int x = 45z;
+  y = x # 3;
+  */ unmatched
+  /* unclosed comment
+}

@@ -1,0 +1,4 @@
+#2 : syntax error, illegal =
+#2 : syntax error, missing DeclarationPrime
+#7 : syntax error, missing else
+#7 : syntax error, missing Statement
