@@ -1,0 +1,9 @@
+#2 : syntax error, missing ]
+#2 : syntax error, illegal int
+#2 : syntax error, illegal ID
+#2 : syntax error, illegal ]
+#6 : syntax error, missing Params
+#7 : syntax error, illegal =
+#7 : syntax error, missing DeclarationPrime
+#8 : syntax error, missing (
+#11 : syntax error, missing ReturnStmtPrime

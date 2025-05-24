@@ -1,0 +1,8 @@
+void md5_hash(char* input, char* output, int N) {
+    void hash[MD5_DIGEST_LENGTH];
+    strcpy(output, input);
+    while (i < N) {
+        MD5((unsigned char*)output, strlen(output), hash);
+        output[MD5_DIGEST_LENGTH * 2] = '\0';
+    }
+}

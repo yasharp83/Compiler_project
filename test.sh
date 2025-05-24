@@ -2,7 +2,8 @@
 # test 9 is ok order of errors is diffrent
 # test 12 is ok (diffrence in ending and EOF)
 #tests 14-16 are ok , deffrence in space
-for i in {14..14}; do
+#in tests 17-19 seems author ride
+for i in {01..08}; do
     echo "Running test case T$i..."
 
 

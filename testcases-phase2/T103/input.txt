@@ -1,0 +1,45 @@
+
+int main(void) {
+  int a ;
+  int b[10]
+  int i;
+  int sum;
+  sum = 0;
+  i = 0;
+  while (i < 10) {
+    b[i] = i * 2;
+    i = i + 1;
+  }
+  i = 0;
+  while (i < 10) {
+    sum = sum + b[i];
+    i = i + 1;
+  }
+  a = sum;
+  if (a < 50) {
+    a = a - 10;
+  } else {
+    if (a < 100) {
+      a = a + 10;
+    } else {
+      a = a * 2;
+      if (a < 200) {
+        a = a - 2;
+      }
+      else{
+        a = a + 2;
+      }
+    }
+  }
+  foo(a, sum);
+  return 0;
+}
+
+void foo(int x, int y) {
+  int a;int b;int c;int d;int e;int f;int g;int h;int i;int j;int k;int l;int m;int n;int o;
+  z = x + y;
+  if (z == 100) {
+    z = z - 1;
+  }
+  return;
+}

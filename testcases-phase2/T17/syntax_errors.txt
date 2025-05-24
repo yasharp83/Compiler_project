@@ -1,0 +1,10 @@
+#2 : syntax error, missing ID
+#2 : syntax error, missing DeclarationPrime
+#2 : syntax error, missing ID
+#2 : syntax error, illegal =
+#2 : syntax error, missing DeclarationPrime
+#3 : syntax error, illegal int
+#4 : syntax error, illegal int
+#4 : syntax error, missing AdditiveExpression
+#10 : syntax error, missing ID
+#10 : syntax error, missing DeclarationPrime

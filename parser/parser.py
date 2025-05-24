@@ -102,8 +102,7 @@ class Parser :
         root = PtNode("Program")
         self.parse_nonterminal("Program" , root)
         
-        
-        root.children.append(PtNode("$"))
+        root.add_children(PtNode("$"))
 
         self.parse_tree_root = root
         self.write_tree()
@@ -113,11 +112,13 @@ class Parser :
     def parse_nonterminal(self , cur_nt : str , pt_par : PtNode):
         node_id = self.graph.get_first_non_terminal(cur_nt)
         cur_node= self.graph.nodes[node_id]
+        #print("# " , cur_nt)
         if len(cur_node.edges) > 1 : 
             look = self.cur_symbol
             progressed = False
 
             for edge , dest in cur_node.edges : 
+                #print("## " , cur_nt , edge , look)
                 if self.edge_match(edge , cur_nt , look) : 
                     if edge.lower()=="epsilon" : 
                         pt_par.add_children(PtNode("epsilon"))
@@ -162,6 +163,7 @@ class Parser :
             look = self.cur_symbol
 
             edge , dest = cur_node.edges[0]
+            #print("## " , cur_nt , edge , look)
             #print(cur_nt , " " , edge , " " , look)
             if self.edge_match(edge , cur_nt , look) : 
                 #print("koobs")
@@ -266,8 +268,10 @@ class Parser :
         return token in self.terminals
     
     def _get_next_token(self):
-        return get_next_token(buffer=self.buffer , dfa=self.dfa , lexical_errors=self.lexical_errors , 
+        nt = get_next_token(buffer=self.buffer , dfa=self.dfa , lexical_errors=self.lexical_errors , 
                               tokens=self.tokens , symbol_table=self.symbol_table)
+        #print(nt)
+        return nt
     
     def write_tree(self , path="parse_tree.txt"):
         if not self.parse_tree_root:

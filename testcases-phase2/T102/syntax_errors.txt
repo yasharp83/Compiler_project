@@ -1,0 +1,2 @@
+#46 : syntax error, missing ;
+#49 : syntax error, illegal )
