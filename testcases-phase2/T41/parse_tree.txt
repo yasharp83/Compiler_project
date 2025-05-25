@@ -1,0 +1,44 @@
+Program
+├── DeclarationList
+│   ├── Declaration
+│   │   ├── DeclarationInitial
+│   │   │   ├── TypeSpecifier
+│   │   │   │   └── (KEYWORD, int) 
+│   │   │   └── (ID, minloc) 
+│   │   └── DeclarationPrime
+│   │       └── FunDeclarationPrime
+│   │           ├── (SYMBOL, () 
+│   │           ├── Params
+│   │           │   └── (KEYWORD, void) 
+│   │           ├── (SYMBOL, )) 
+│   │           └── CompoundStmt
+│   │               ├── (SYMBOL, {) 
+│   │               ├── DeclarationList
+│   │               │   └── epsilon
+│   │               ├── StatementList
+│   │               │   ├── Statement
+│   │               │   │   └── ReturnStmt
+│   │               │   │       ├── (KEYWORD, return) 
+│   │               │   │       └── ReturnStmtPrime
+│   │               │   │           ├── Expression
+│   │               │   │           │   ├── (ID, k) 
+│   │               │   │           │   └── B
+│   │               │   │           │       └── SimpleExpressionPrime
+│   │               │   │           │           ├── AdditiveExpressionPrime
+│   │               │   │           │           │   ├── TermPrime
+│   │               │   │           │           │   │   ├── SignedFactorPrime
+│   │               │   │           │           │   │   │   └── FactorPrime
+│   │               │   │           │           │   │   │       └── epsilon
+│   │               │   │           │           │   │   └── G
+│   │               │   │           │           │   │       └── epsilon
+│   │               │   │           │           │   └── D
+│   │               │   │           │           │       └── epsilon
+│   │               │   │           │           └── C
+│   │               │   │           │               └── epsilon
+│   │               │   │           └── (SYMBOL, ;) 
+│   │               │   └── StatementList
+│   │               │       └── epsilon
+│   │               └── (SYMBOL, }) 
+│   └── DeclarationList
+│       └── epsilon
+└── $

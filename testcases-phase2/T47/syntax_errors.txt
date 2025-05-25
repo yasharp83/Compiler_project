@@ -1,0 +1,16 @@
+#1 : syntax error, missing Params
+#7 : syntax error, illegal ;
+#8 : syntax error, illegal while
+#8 : syntax error, illegal (
+#8 : syntax error, illegal ID
+#8 : syntax error, illegal NUM
+#8 : syntax error, illegal {
+#9 : syntax error, illegal ID
+#9 : syntax error, illegal =
+#9 : syntax error, illegal ID
+#9 : syntax error, illegal -
+#9 : syntax error, illegal NUM
+#11 : syntax error, illegal return
+#11 : syntax error, illegal ID
+#12 : syntax error, illegal }
+#13 : syntax error, Unexpected EOF

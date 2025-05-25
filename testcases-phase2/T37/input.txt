@@ -1,0 +1,9 @@
+int mix(int u int v) {
+    return u * v;
+}
+
+void main(void) {
+    int result;
+    result = mix(2, 3);
+    return;
+}

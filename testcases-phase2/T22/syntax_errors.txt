@@ -1,0 +1,13 @@
+#1 : syntax error, illegal ID
+#1 : syntax error, illegal ID
+#1 : syntax error, illegal *
+#1 : syntax error, illegal ID
+#1 : syntax error, illegal ,
+#1 : syntax error, illegal ID
+#1 : syntax error, illegal ID
+#1 : syntax error, illegal ,
+#2 : syntax error, illegal ID
+#2 : syntax error, missing SignedFactor
+#2 : syntax error, illegal ID
+#3 : syntax error, illegal ID
+#4 : syntax error, illegal ID

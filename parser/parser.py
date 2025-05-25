@@ -70,6 +70,7 @@ class Parser :
                       , grammar_path : str = "parser/grammar_config/grammar.txt"
                       , follow_path : str = "parser/grammar_config/follow.txt"
                       , first_path : str = "parser/grammar_config/first.txt" 
+                      , debug:bool = False
                  ):
 
         self.nonTerminals : list[str] = []
@@ -88,7 +89,6 @@ class Parser :
 
         self.syntax_errors = syntax_errors
 
-        #get_next_token stuff
         self.buffer = buffer
         self.dfa = dfa 
         self.lexical_errors = lexical_errors
@@ -96,14 +96,13 @@ class Parser :
         self.symbol_table = symbol_table
 
         self.eof_error_occured = False
+        self.debug = debug
 
     def start(self):
         self.advance()
         root = PtNode("Program")
         self.parse_nonterminal("Program" , root)
         
-        root.add_children(PtNode("$"))
-
         self.parse_tree_root = root
         self.write_tree()
         self.syntax_errors.update_file()
@@ -112,14 +111,15 @@ class Parser :
     def parse_nonterminal(self , cur_nt : str , pt_par : PtNode):
         node_id = self.graph.get_first_non_terminal(cur_nt)
         cur_node= self.graph.nodes[node_id]
-        #print("# " , cur_nt)
+        self.debug_print("#entered node : " + cur_nt)
         if len(cur_node.edges) > 1 : 
             look = self.cur_symbol
             progressed = False
 
             for edge , dest in cur_node.edges : 
-                #print("## " , cur_nt , edge , look)
-                if self.edge_match(edge , cur_nt , look) : 
+                self.debug_print(f"## {cur_nt} : checking edge {edge} with look {look}")
+                if self.edge_match(edge , cur_nt , look) :
+                    self.debug_print(f"# {edge} matched with {look}")
                     if edge.lower()=="epsilon" : 
                         pt_par.add_children(PtNode("epsilon"))
                         cur_node = self.graph.nodes[dest]
@@ -141,17 +141,19 @@ class Parser :
                     break
             
             if not progressed : 
-
+                self.debug_print(f"## {cur_nt} : no edge matched with look {look}")
                 if look == "$" : 
                     if not self.eof_error_occured:
                         self.eof_error_occured=True
                         self.syntax_errors.add(self.buffer.line , "syntax error, Unexpected EOF")
                     return True
                 elif look not in self.follows[cur_nt]: 
+                    self.debug_print(f"## {cur_nt} : no edge matched with look {look} and not in follows")
                     self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
                     self.advance()
 
                 else : 
+                    self.debug_print(f"## {cur_nt} : no edge matched with look {look} and in follows")
                     self.syntax_errors.add(self.buffer.line , f"syntax error, missing {cur_nt}")
                     return False
 
@@ -163,10 +165,9 @@ class Parser :
             look = self.cur_symbol
 
             edge , dest = cur_node.edges[0]
-            #print("## " , cur_nt , edge , look)
-            #print(cur_nt , " " , edge , " " , look)
+            self.debug_print(f"## {cur_nt} : checking edge {edge} with look {look}")
             if self.edge_match(edge , cur_nt , look) : 
-                #print("koobs")
+                self.debug_print(f"# {edge} matched with {look}")
                 if edge in self.terminals:
                     pt_par.add_children(PtNode(self.leaf_repr()))
                     self.advance()
@@ -184,21 +185,24 @@ class Parser :
                     self.syntax_errors.add(self.buffer.line , "syntax error, Unexpected EOF")
                 return True
             elif self.is_terminal(edge) and look not in self.follows[cur_nt]: 
+                self.debug_print(f"## {cur_nt} : no edge matched with look {look} and not in follows")
                 self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
                 self.advance()
             elif not self.is_terminal(edge) and look not in self.follows[edge]:
+                self.debug_print(f"## {cur_nt} : no edge matched with look {look} and not in follows")
                 self.syntax_errors.add(self.buffer.line , f"syntax error, illegal {look}")
                 self.advance()
             else :
+                self.debug_print(f"## {cur_nt} : no edge matched with look {look} and in follows")
                 self.syntax_errors.add(self.buffer.line , f"syntax error, missing {edge}")
                 cur_node = self.graph.nodes[dest]
     
     def edge_match(self, edge : str , component : str , look : str) -> bool:
         if edge.lower() == "epsilon" : 
-            return look in self.follows[component] #or look =="$"
+            return look in self.follows[component] 
         if self.is_terminal(edge):
             return edge.lower()==look.lower()
-        if look in self.firsts[edge] or ("EPSILON" in self.firsts[edge] and (look in self.follows[edge])):#or look == "$"
+        if look in self.firsts[edge] or ("EPSILON" in self.firsts[edge] and (look in self.follows[edge])):
             return True
         return False
 
@@ -270,7 +274,6 @@ class Parser :
     def _get_next_token(self):
         nt = get_next_token(buffer=self.buffer , dfa=self.dfa , lexical_errors=self.lexical_errors , 
                               tokens=self.tokens , symbol_table=self.symbol_table)
-        #print(nt)
         return nt
     
     def write_tree(self , path="parse_tree.txt"):
@@ -279,3 +282,7 @@ class Parser :
         with open(path , "w" , encoding="utf-8") as f : 
             f.write("\n".join(self.parse_tree_root.to_lines()))
 
+    def debug_print(self , msg : str):
+        if not self.debug:
+            return
+        print(msg)

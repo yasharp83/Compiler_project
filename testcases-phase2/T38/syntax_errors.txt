@@ -1,0 +1,14 @@
+#3 : syntax error, missing ]
+#4 : syntax error, illegal =
+#4 : syntax error, missing DeclarationPrime
+#5 : syntax error, illegal int
+#6 : syntax error, illegal while
+#6 : syntax error, illegal (
+#6 : syntax error, illegal ID
+#6 : syntax error, missing ;
+#6 : syntax error, illegal <
+#6 : syntax error, missing ;
+#6 : syntax error, illegal )
+#8 : syntax error, illegal =
+#13 : syntax error, missing Params
+#13 : syntax error, missing CompoundStmt

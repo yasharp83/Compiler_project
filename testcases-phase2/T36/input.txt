@@ -1,0 +1,11 @@
+int process(int x, int y {
+    int sum;
+    sum = x + y;
+    return sum;
+}
+
+void main(void) {
+    int r;
+    r = process(4, 5);
+    return;
+}

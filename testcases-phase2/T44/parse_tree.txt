@@ -1,0 +1,163 @@
+Program
+└── DeclarationList
+    └── Declaration
+        ├── DeclarationInitial
+        │   ├── TypeSpecifier
+        │   │   └── (KEYWORD, int)
+        │   └── (ID, main)
+        └── DeclarationPrime
+            └── FunDeclarationPrime
+                ├── (SYMBOL, ()
+                ├── Params
+                │   └── (KEYWORD, void)
+                ├── (SYMBOL, ))
+                └── CompoundStmt
+                    ├── (SYMBOL, {)
+                    ├── DeclarationList
+                    │   ├── Declaration
+                    │   │   └── DeclarationInitial
+                    │   │       ├── TypeSpecifier
+                    │   │       │   └── (KEYWORD, int)
+                    │   │       └── (ID, x)
+                    │   └── DeclarationList
+                    │       └── epsilon
+                    └── StatementList
+                        ├── Statement
+                        │   └── ExpressionStmt
+                        │       ├── Expression
+                        │       │   └── SimpleExpressionZegond
+                        │       │       ├── AdditiveExpressionZegond
+                        │       │       │   ├── TermZegond
+                        │       │       │   │   ├── SignedFactorZegond
+                        │       │       │   │   │   └── FactorZegond
+                        │       │       │   │   │       └── (NUM, 10)
+                        │       │       │   │   └── G
+                        │       │       │   │       └── epsilon
+                        │       │       │   └── D
+                        │       │       │       └── epsilon
+                        │       │       └── C
+                        │       │           └── epsilon
+                        │       └── (SYMBOL, ;)
+                        └── StatementList
+                            └── Statement
+                                └── SelectionStmt
+                                    ├── (KEYWORD, if)
+                                    ├── (SYMBOL, ()
+                                    ├── Expression
+                                    │   ├── (ID, x)
+                                    │   └── B
+                                    │       └── SimpleExpressionPrime
+                                    │           ├── AdditiveExpressionPrime
+                                    │           │   ├── TermPrime
+                                    │           │   │   ├── SignedFactorPrime
+                                    │           │   │   │   └── FactorPrime
+                                    │           │   │   │       └── epsilon
+                                    │           │   │   └── G
+                                    │           │   │       └── epsilon
+                                    │           │   └── D
+                                    │           │       └── epsilon
+                                    │           └── C
+                                    │               └── epsilon
+                                    ├── (SYMBOL, ))
+                                    └── Statement
+                                        └── CompoundStmt
+                                            ├── (SYMBOL, {)
+                                            ├── DeclarationList
+                                            │   └── epsilon
+                                            ├── StatementList
+                                            │   ├── Statement
+                                            │   │   └── ExpressionStmt
+                                            │   │       ├── Expression
+                                            │   │       │   ├── (ID, x)
+                                            │   │       │   └── B
+                                            │   │       │       ├── (SYMBOL, =)
+                                            │   │       │       └── Expression
+                                            │   │       │           ├── (ID, x)
+                                            │   │       │           └── B
+                                            │   │       │               └── SimpleExpressionPrime
+                                            │   │       │                   ├── AdditiveExpressionPrime
+                                            │   │       │                   │   ├── TermPrime
+                                            │   │       │                   │   │   ├── SignedFactorPrime
+                                            │   │       │                   │   │   │   └── FactorPrime
+                                            │   │       │                   │   │   │       └── epsilon
+                                            │   │       │                   │   │   └── G
+                                            │   │       │                   │   │       └── epsilon
+                                            │   │       │                   │   └── D
+                                            │   │       │                   │       ├── Addop
+                                            │   │       │                   │       │   └── (SYMBOL, +)
+                                            │   │       │                   │       ├── Term
+                                            │   │       │                   │       │   ├── SignedFactor
+                                            │   │       │                   │       │   │   └── Factor
+                                            │   │       │                   │       │   │       └── (NUM, 1)
+                                            │   │       │                   │       │   └── G
+                                            │   │       │                   │       │       └── epsilon
+                                            │   │       │                   │       └── D
+                                            │   │       │                   │           └── epsilon
+                                            │   │       │                   └── C
+                                            │   │       │                       └── epsilon
+                                            │   │       └── (SYMBOL, ;)
+                                            │   └── StatementList
+                                            │       ├── Statement
+                                            │       │   └── CompoundStmt
+                                            │       │       ├── (SYMBOL, {)
+                                            │       │       ├── DeclarationList
+                                            │       │       │   └── epsilon
+                                            │       │       ├── StatementList
+                                            │       │       │   ├── Statement
+                                            │       │       │   │   └── ExpressionStmt
+                                            │       │       │   │       ├── Expression
+                                            │       │       │   │       │   ├── (ID, x)
+                                            │       │       │   │       │   └── B
+                                            │       │       │   │       │       ├── (SYMBOL, =)
+                                            │       │       │   │       │       └── Expression
+                                            │       │       │   │       │           ├── (ID, x)
+                                            │       │       │   │       │           └── B
+                                            │       │       │   │       │               └── SimpleExpressionPrime
+                                            │       │       │   │       │                   ├── AdditiveExpressionPrime
+                                            │       │       │   │       │                   │   ├── TermPrime
+                                            │       │       │   │       │                   │   │   ├── SignedFactorPrime
+                                            │       │       │   │       │                   │   │   │   └── FactorPrime
+                                            │       │       │   │       │                   │   │   │       └── epsilon
+                                            │       │       │   │       │                   │   │   └── G
+                                            │       │       │   │       │                   │   │       └── epsilon
+                                            │       │       │   │       │                   │   └── D
+                                            │       │       │   │       │                   │       ├── Addop
+                                            │       │       │   │       │                   │       │   └── (SYMBOL, -)
+                                            │       │       │   │       │                   │       ├── Term
+                                            │       │       │   │       │                   │       │   ├── SignedFactor
+                                            │       │       │   │       │                   │       │   │   └── Factor
+                                            │       │       │   │       │                   │       │   │       └── (NUM, 1)
+                                            │       │       │   │       │                   │       │   └── G
+                                            │       │       │   │       │                   │       │       └── epsilon
+                                            │       │       │   │       │                   │       └── D
+                                            │       │       │   │       │                   │           └── epsilon
+                                            │       │       │   │       │                   └── C
+                                            │       │       │   │       │                       └── epsilon
+                                            │       │       │   │       └── (SYMBOL, ;)
+                                            │       │       │   └── StatementList
+                                            │       │       │       └── epsilon
+                                            │       │       └── (SYMBOL, })
+                                            │       └── StatementList
+                                            │           ├── Statement
+                                            │           │   └── ReturnStmt
+                                            │           │       ├── (KEYWORD, return)
+                                            │           │       └── ReturnStmtPrime
+                                            │           │           ├── Expression
+                                            │           │           │   ├── (ID, x)
+                                            │           │           │   └── B
+                                            │           │           │       └── SimpleExpressionPrime
+                                            │           │           │           ├── AdditiveExpressionPrime
+                                            │           │           │           │   ├── TermPrime
+                                            │           │           │           │   │   ├── SignedFactorPrime
+                                            │           │           │           │   │   │   └── FactorPrime
+                                            │           │           │           │   │   │       └── epsilon
+                                            │           │           │           │   │   └── G
+                                            │           │           │           │   │       └── epsilon
+                                            │           │           │           │   └── D
+                                            │           │           │           │       └── epsilon
+                                            │           │           │           └── C
+                                            │           │           │               └── epsilon
+                                            │           │           └── (SYMBOL, ;)
+                                            │           └── StatementList
+                                            │               └── epsilon
+                                            └── (SYMBOL, })

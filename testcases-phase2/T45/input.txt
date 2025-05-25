@@ -1,0 +1,30 @@
+void main(void) {
+    int x;
+    int y;
+    x = 10;
+    y = 20;
+    int z = 2;
+    {
+        {
+            {
+                {
+                    {
+                        {
+                            while (1) {
+                                x = x * x;
+                                x = y * x;
+                                z = x * a;
+                                if (x % y == 1) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (x % z == y) {
+                            x = x * y - x;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

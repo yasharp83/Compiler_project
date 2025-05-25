@@ -1,0 +1,14 @@
+void (int) {
+  int a;
+  if (a > 2):
+    int b;
+    a = a - b;
+    if (x:
+      return hello
+  int __c;
+  int c;
+  int d;
+  for c /* in range(15):
+  if a then b else c;
+  void */ (int)
+}

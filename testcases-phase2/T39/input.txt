@@ -1,0 +1,22 @@
+
+void (void) {
+    int a = 3;
+    int b = 4;
+    int c = 0;
+    int j = 0;
+    while (j < 10) {
+        if (c < 500){
+	    c = c + (b * b) + (a * a);
+	    j = j + 1;
+	}
+	if (x % 2 = 0)
+		/*nothing*/
+        else {
+	    j = j 2;
+	    c = c + 55;
+	    break;
+	}
+    }
+    return 0;
+    /* hello there
+}

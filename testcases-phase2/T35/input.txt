@@ -1,0 +1,12 @@
+void adjust(int a[], int size) {
+    int i;
+    i = 0;
+    while (i < size) {
+        if (a[i] < 0)
+            break;
+	else
+	    break;
+        i = i + 1;
+    }
+    return;
+}

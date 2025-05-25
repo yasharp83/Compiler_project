@@ -1,0 +1,24 @@
+int main() {
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int total = 0;
+
+    while (4x < 5) {
+        y = 0;
+        while (y < 5) {
+            z = 0;
+            while (z < 5) {
+                total = total + x + y + z;
+                z = z + 1;
+            }
+            y = y + 1;
+        }
+        x = x + 1;
+    }
+
+    /*  gooooooood comment !  */
+
+    retrun total;
+}
+

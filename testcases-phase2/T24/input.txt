@@ -1,0 +1,22 @@
+void complicatedCalc() {
+    int a = 10;
+    int b = 20;
+    int c = 30;
+    int d = 40;
+    int e = 50;
+
+    int result = a + b * c - d / e;
+
+    if (result == 20) {
+        result = result + 5;
+    }
+    else {
+        result = result - 5;
+    }
+
+    int 7invalid = 104;
+    resul = result === 5;
+
+    return;
+}
+

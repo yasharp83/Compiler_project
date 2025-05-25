@@ -1,0 +1,7 @@
+#6 : syntax error, illegal int
+#17 : syntax error, illegal ID
+#20 : syntax error, missing else
+#20 : syntax error, missing Statement
+#22 : syntax error, illegal ID
+#25 : syntax error, missing else
+#25 : syntax error, missing Statement

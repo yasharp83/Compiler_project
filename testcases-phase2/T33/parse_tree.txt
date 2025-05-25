@@ -1,0 +1,66 @@
+Program
+└── DeclarationList
+    ├── Declaration
+    │   ├── DeclarationInitial
+    │   │   ├── TypeSpecifier
+    │   │   │   └── (KEYWORD, int)
+    │   │   └── (ID, main)
+    │   └── DeclarationPrime
+    │       └── FunDeclarationPrime
+    │           ├── (SYMBOL, ()
+    │           ├── Params
+    │           │   └── EPSILON
+    │           │       └── epsilon
+    │           ├── (SYMBOL, ))
+    │           └── CompoundStmt
+    │               ├── (SYMBOL, {)
+    │               ├── DeclarationList
+    │               │   ├── Declaration
+    │               │   │   └── DeclarationInitial
+    │               │   │       ├── TypeSpecifier
+    │               │   │       │   └── (KEYWORD, int)
+    │               │   │       └── (ID, a)
+    │               │   └── DeclarationList
+    │               │       └── EPSILON
+    │               │           └── epsilon
+    │               ├── StatementList
+    │               │   ├── Statement
+    │               │   │   └── ExpressionStmt
+    │               │   │       ├── Expression
+    │               │   │       │   ├── (ID, a)
+    │               │   │       │   └── B
+    │               │   │       │       ├── (SYMBOL, =)
+    │               │   │       │       └── Expression
+    │               │   │       │           └── SimpleExpressionZegond
+    │               │   │       │               ├── AdditiveExpressionZegond
+    │               │   │       │               │   ├── TermZegond
+    │               │   │       │               │   │   ├── SignedFactorZegond
+    │               │   │       │               │   │   │   └── FactorZegond
+    │               │   │       │               │   │   │       └── (NUM, 10)
+    │               │   │       │               │   │   └── G
+    │               │   │       │               │   │       └── EPSILON
+    │               │   │       │               │   │           └── epsilon
+    │               │   │       │               │   └── D
+    │               │   │       │               │       └── EPSILON
+    │               │   │       │               │           └── epsilon
+    │               │   │       │               └── C
+    │               │   │       │                   └── EPSILON
+    │               │   │       │                       └── epsilon
+    │               │   │       └── (SYMBOL, ;)
+    │               │   └── StatementList
+    │               │       ├── Statement
+    │               │       │   └── ReturnStmt
+    │               │       │       ├── (KEYWORD, return)
+    │               │       │       └── ReturnStmtPrime
+    │               │       │           ├── Expression
+    │               │       │           │   ├── (ID, a)
+    │               │       │           │   └── B
+    │               │       │           │       └── epsilon
+    │               │       │           └── (SYMBOL, ;)
+    │               │       └── StatementList
+    │               │           └── EPSILON
+    │               │               └── epsilon
+    │               └── (SYMBOL, })
+    └── DeclarationList
+        └── EPSILON
+            └── epsilon

@@ -1,0 +1,11 @@
+#2 : syntax error, missing ID
+#3 : syntax error, illegal =
+#3 : syntax error, missing DeclarationPrime
+#4 : syntax error, illegal int
+#5 : syntax error, illegal int
+#6 : syntax error, illegal int
+#12 : syntax error, missing else
+#12 : syntax error, illegal NUM
+#14 : syntax error, missing Statement
+#15 : syntax error, illegal NUM
+#23 : syntax error, Unexpected EOF

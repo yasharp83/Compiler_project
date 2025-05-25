@@ -1,0 +1,23 @@
+
+
+int sum_arr(int arr[ , int n){
+	int sum = 0;
+	int i == 0
+	while (i<n){
+		sum = sum + arr(i);
+		i += 1;
+	}
+	return sum;
+}
+
+void main()}
+	int arr[3];
+	int arr[0] = 0;
+	int arr[2] = 2;
+	int arr[1] == 1;
+	int sum = sum_Arr(arr, 3);
+	print[sum];
+	return
+}
+	
+	

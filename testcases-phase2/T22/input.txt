@@ -1,0 +1,5 @@
+void B(const char *ptr, size_t length, int index) {
+    g_T_table[index].ptr = (char *)ptr;
+    g_T_table[index].length = length;
+    g_T_table[index].index = index;
+}

@@ -1,0 +1,6 @@
+#10 : syntax error, illegal =
+#10 : syntax error, missing DeclarationPrime
+#11 : syntax error, illegal int
+#12 : syntax error, illegal ID
+#13 : syntax error, illegal int
+#17 : syntax error, missing Expression

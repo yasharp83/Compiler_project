@@ -1,0 +1,24 @@
+void main(void/#*/) {
+string b#x = Hello;
+for (int i = 0; i < 5; i = i + 1) {
+        switch(#i#) {
+            case 0:
+                printf(/c, x[#i %]);
+                break;
+            case 1:
+                printf(/c, x[i /* comment */]);
+                break;               
+            case 2:
+                printf(/c, x[i]);
+                break;
+            case 3:
+                printf(/c, x[i]);
+                break;
+                break;
+          /*  default:
+                printf(Bye);
+                break;
+         
+            }
+    }
+} 

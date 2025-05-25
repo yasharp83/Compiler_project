@@ -1,0 +1,25 @@
+int hey() {
+    int x;
+    x = 3
+    {
+        int y
+        y = x + 5
+    }
+    z = y + 2;
+    if (z > 10)
+        return x + y + z
+    else
+        return
+
+}
+
+void main(void {
+    int r;
+    r = chaos(
+    if r < 10 {
+        break
+    }
+    while r > 0 {
+        r = r - 1
+    return r;
+}

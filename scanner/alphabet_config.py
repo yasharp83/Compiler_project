@@ -1,6 +1,6 @@
 
 Keywords = ["if" , "else" , "void" , "int" , "while" , "break" , "return"]
-Symbols = [';' , ':' , ',' , '[' , ']' , '(' , ')' , '{' , '}' , '+' , '-' , '*' , '/' , '\\' , '=' , '=' , '>' , '<']
+Symbols = [';' , ':' , ',' , '[' , ']' , '(' , ')' , '{' , '}' , '+' , '-' , '*' , '/' , '\\' , '=' , '=' , '<']
 White_spaces = [chr(32),chr(10),chr(9),chr(13),chr(11),chr(12)]
 Digits = [chr(i) for i in range(48,58)]
 English_aphabet = [chr(i) for i in (list(range(65,91)) + list(range(97,123)))]
