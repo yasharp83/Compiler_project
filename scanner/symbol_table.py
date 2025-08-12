@@ -1,61 +1,62 @@
 from scanner.alphabet_config import Keywords
-class SymbolTable:
-    def __init__(self,file_path="symbol_table.txt"):
-        self.file_path = file_path
-        self.symbols = []
-        for keyword in Keywords : 
-            self.symbols.append(keyword)
-        try:
-            with open(file_path, 'a'):
-                pass 
-        except:
-            print(f"an error occurred while creating the file{self.file_path}")
+
+class Token:
+    def __init__(self , type , lexeme):
+        self.type = type
+        self.lexeme = lexeme
+
+class Record:
+    def __init__(self , token: Token =None , address=None , token_type=None , scope : 'Scope' = None , num_args=None):
+        self.token = token
+        self.address = address
+        self.token_type = token_type
+        self.scope = scope
+        self.num_args = num_args
+
+class Scope:
+    def __init__(self , parent=None):
+        self.records : list[Record] = []
+        self.parent : Scope = parent
+
+    def add(self , token : Token) -> bool:
+        if self.get_record(token_lexeme=token.lexeme) is None:
+            record = Record(token=token , scope=self)
+            self.records.append(record)
+            return True
+        return False
     
-    def add(self,symbol):
-        if symbol in self.symbols:
+    def get_record(self , token_lexeme) -> Record:
+        for record in self.records : 
+            if record.token.lexeme == token_lexeme:
+                return record
+        if self.parent is not None : 
+            return self.parent.get_record(token_lexeme=token_lexeme)
+        return None
+
+
+class SymbolTable:
+    def __init__(self, file_path="symbol_table.txt"):
+        self.file_path = file_path
+        self.scopes = [Scope()]
+        self.keywords = Keywords
+
+    def get_current_scope(self): 
+        return self.scopes[-1]
+
+    def add_scope(self):
+        self.scopes.append(Scope(self.get_current_scope()))
+        return
+    
+    def remove_scope(self):
+        return self.scopes.pop()
+    
+    def add(self , token) -> bool:
+        if type(token) is list : 
+            token = Token(token[0] , token[1])
+        if token.lexeme in self.keywords : 
             return False
-        self.symbols.append(symbol)
-        return True
+        return self.get_current_scope().add(token=token)
     
     def update_file(self):
-        try:
-            with open(self.file_path, 'w') as f:
-                ind = 1
-                for symbol in self.symbols:
-                    f.write(f"{ind}.\t{symbol}\n")
-                    ind+=1
-        except:
-            print(f"an error occurred while updating the file{self.file_path}")
-
-    def read_file(self, file_path=None):
-        """
-        Read symbols from a file formatted as:
-        1.    symbol1
-        2.    symbol2
-        etc.
-        """
-        if file_path is None:
-            file_path = self.file_path
-            
-        try:
-            # Keep keywords but reset other symbols
-            self.symbols = [symbol for symbol in self.symbols if symbol in Keywords]
-            
-            with open(file_path, 'r') as f:
-                for line in f:
-                    if not line.strip():
-                        continue
-                    
-                    parts = line.strip().split('\t')
-                    if len(parts) < 2:
-                        continue
-                    
-                    # Extract symbol (ignore index)
-                    symbol = parts[1].strip()
-                    if symbol and symbol not in self.symbols:
-                        self.symbols.append(symbol)
-                        
-            return True
-        except Exception as e:
-            print(f"An error occurred while reading the file {file_path}: {e}")
-            return False
+        #TODO
+        return

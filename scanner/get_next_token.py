@@ -53,7 +53,7 @@ def handle_token(token, no_line ,tokens:Tokens , symbol_table:SymbolTable ,add_t
     txt = token[1]
     if add_symbols:
         if stat=="KEYWORD" or stat=="ID":
-            symbol_table.add(txt)
+            symbol_table.add([stat , txt])
     if add_tokens:
         if stat!="WHITE":
             tokens.add(no_line , token)
