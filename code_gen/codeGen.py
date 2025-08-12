@@ -1,6 +1,6 @@
 from scanner.symbol_table import SymbolTable
 from code_gen.scopeFrame import ScopeFrame
-
+from scanner.symbol_table import Token
 
 class CodeGen:
     def __init__(self , 
@@ -40,15 +40,98 @@ class CodeGen:
         }
         self.delete_scope_flag = False
 
+        self.function_input_flag = False
+        self.last_token = None
+
+        self.function_data_pointer = 0
+        self.function_temp_pointer = 0
+
+        self.is_main_declared=False
 
         self.sub_routines = {
-            #TODO
+            "push_num" : self.code_gen_push_num , 
+            "push_id" : self.code_gen_push_id,
+
+            "pop" : self.code_gen_pop ,
+
+            "define_id" : self.code_gen_define_id , 
+            "define_array" : self.code_gen_define_array , 
+            "define_function" : self.code_gen_define_function ,
+
+            "main_function" : self.code_gen_main_function , 
+
+            "scope_start" : self.code_gen_scope_start , 
+            "scope_finish" : self.code_gen_scope_finish ,
+
+            "function_input_start" : self.code_gen_function_input_start ,
+            "function_input_finish" : self.code_gen_function_input_finish , 
+
+            "function_return" : self.code_gen_function_return
         }
+    
 
 
-        
+
+    def code_gen_pop(self , token:Token , param=None):
+        self.semantic_stack.pop()
+
+    def code_gen_push_id(self , token:Token , param=None):
+        record = self.symbol_table.find_record_by_id(token.lexeme)
+        self.semantic_stack.append(record.address)
+
+    def code_gen_push_num(self , token:Token , param=None):
+        self.semantic_stack.append(f"#{token.lexeme}")
+
+
+    def code_gen_define_id(self , token:Token , param=None):
+        self.last_token = token
+        record = self.symbol_table.find_record_by_id(token.lexeme)
+        record.address = self.get_datablock_var()
+        if self.function_input_flag : 
+            self.stack_pop(record.address)
+        else:
+            self.add_code(op="ASSIGN" , r1="#0" , r2=f"{record.address}")
+
+    def code_gen_define_array(self , token:Token , param=None):
+        self.add_code(op="ASSIGN" , r1=f"{self.registers["sp"]}" , r2=self.semantic_stack[-2])
+        size = self.semantic_stack.pop()
+        size = int(size[1:])
+        self.stack_allocate(size=size)
+
+    def code_gen_define_function(self , token:Token , param=None):
+        self.function_data_pointer , self.function_temp_pointer = self.data_address , self.temp_addres
+        record = self.symbol_table.find_record_by_id(self.last_token.lexeme)
+        record.address = len(self.program_block)
+        self.program_block[-1] = ""
 
     
+    def code_gen_scope_start(self , token:Token , param=None):
+        self.symbol_table.add_scope()
+        self.scope_manage_add_scope(scope_type=param[0])
+
+    def code_gen_scope_finish(self , token:Token , param=None):
+        self.symbol_table.remove_scope()
+        self.scope_manage_remove_scope(scope_type=param[0])
+
+    def code_gen_function_input_start(self , token:Token , param=None):
+        self.function_input_flag = True
+    
+    def code_gen_function_input_finish(self , token:Token , param=None):
+        self.function_input_flag = False
+
+    def code_gen_function_return(self , token:Token , param=None):
+        self.add_code(op="JP" , r1=f"@{self.registers["ra"]}")
+
+
+    def code_gen_main_function(self , token:Token , param=None):
+        if self.is_main_declared : 
+            return
+        self.is_main_declared = True
+        func = self.semantic_stack.pop()
+        self.program_block.pop()
+        self.semantic_stack.append(len(self.program_block))
+        self.program_block.append("MAIN_PLACE_HOLDER")
+        self.semantic_stack.append(func)
 
     def get_datablock_var(self , size=1):
         ret = self.data_address
@@ -64,8 +147,6 @@ class CodeGen:
 
     def scope_manage_push_scope_type(self , typ):
         self.scope_type_stack.append(typ)
-        if self.delete_scope_flag : 
-            self.scope_manage_remove_scope()
     
     def scope_manage_create_jump_placeholder(self):
         self.scopeFrames[self.scope_type_stack.pop()].create_jump_placeholder()
@@ -73,15 +154,15 @@ class CodeGen:
     def scope_manage_backpatch_jump(self):
         self.scopeFrames[self.scope_type_stack.pop()].backpatch_jump()
     
-    def scope_manage_add_scope(self):
-        scope_type=self.scope_type_stack.pop()
+    def scope_manage_add_scope(self , scope_type):
+        #scope_type=self.scope_type_stack.pop()
         self.scopeFrames[scope_type].add_scope()
         if scope_type== "f":
             self.stack_add_scope()
         
-    def scope_manage_remove_scope(self):
-        self.delete_scope_flag=False
-        scope_type= self.scope_type_stack.pop()
+    def scope_manage_remove_scope(self , scope_type):
+        #self.delete_scope_flag=False
+        #scope_type= self.scope_type_stack.pop()
         self.scopeFrames[scope_type].remove_scope()
         if scope_type=="f" : 
             self.stack_del_scope()

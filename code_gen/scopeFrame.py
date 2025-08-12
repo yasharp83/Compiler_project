@@ -1,6 +1,5 @@
-from codeGen import CodeGen
 class ScopeFrame:
-    def __init__(self , codeGen:CodeGen):
+    def __init__(self , codeGen):
         self.codeGen=codeGen
         self.adress_stack=[]
         self.pending_jumps=[]

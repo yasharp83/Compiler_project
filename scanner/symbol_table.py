@@ -57,6 +57,9 @@ class SymbolTable:
             return False
         return self.get_current_scope().add(token=token)
     
+    def find_record_by_id(self , lexeme) -> Record:
+        return self.get_current_scope().get_record(token_lexeme=lexeme)
+    
     def update_file(self):
         #TODO
         return

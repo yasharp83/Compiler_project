@@ -1,10 +1,10 @@
 Program -> DeclarationList $
 DeclarationList -> Declaration DeclarationList | EPSILON
-Declaration -> DeclarationInitial DeclarationPrime
-DeclarationInitial -> TypeSpecifier ID
+Declaration -> DeclarationInitial DeclarationPrime #pop
+DeclarationInitial -> TypeSpecifier #define_id #push_id ID
 DeclarationPrime -> FunDeclarationPrime | VarDeclarationPrime
-VarDeclarationPrime -> ; | [ NUM ] ;
-FunDeclarationPrime -> ( Params ) CompoundStmt
+VarDeclarationPrime -> ; | [ #push_num NUM ] #define_array;
+FunDeclarationPrime -> #define_function #main_function #scope_start(t) ( #function_input_start Params #function_input_finish ) #scope_start(f) CompoundStmt #scope_finish(f) #scope_finish(t) #function_return
 TypeSpecifier -> int | void
 Params -> int ID ParamPrime ParamList | void
 ParamList -> , Param ParamList | EPSILON

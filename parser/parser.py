@@ -6,14 +6,16 @@ from scanner.lexical_errors import LexicalErrors
 from scanner.symbol_table import SymbolTable
 from scanner.get_next_token import get_next_token
 from scanner.init_dfa import init_dfa
+from code_gen.codeGen import CodeGen
+from scanner.symbol_table import Token
 class TdNode:
     def __init__(self ,component: str , id : int , is_accept : bool = False):
         self.id = id
         self.component = component
         self.is_accept = is_accept
         self.edges = []
-    def add_edge(self , edge: str , dest : int):
-        self.edges.append((edge , dest))
+    def add_edge(self , edge: str , dest : int , actions:dict[str , list[str]]={"start":[] , "finish":[]}):
+        self.edges.append((edge , dest , actions))
 
 class TdGraph:
     def __init__(self):
@@ -29,8 +31,14 @@ class TdGraph:
         self.nodes[self.cur_id] = node
         return self.cur_id
 
-    def add_edge(self , start: int , edge : str, dest : int):
-        self.nodes[start].add_edge(edge , dest)
+    def add_edge(self , start: int , edge : str, dest : int , actions:dict[str , list[str]]={"start":[] , "finish":[]}):
+        self.nodes[start].add_edge(edge , dest , actions=actions)
+
+    def get_edge_actions(self , start: int , edge : str  , dest : int):
+        for e in self.nodes[start].edges : 
+            if e[0]==edge and e[1]==dest : 
+                return e[2]
+        return None
     
     def get_first_non_terminal(self , component : str) -> int: 
         try : 
@@ -67,6 +75,7 @@ class Parser :
                       , tokens:Tokens 
                       , symbol_table:SymbolTable 
                       , syntax_errors : SyntaxErrors 
+                      , codeGen : CodeGen
                       , grammar_path : str = "parser/grammar_config/grammar.txt"
                       , follow_path : str = "parser/grammar_config/follow.txt"
                       , first_path : str = "parser/grammar_config/first.txt" 
@@ -95,6 +104,8 @@ class Parser :
         self.tokens = tokens
         self.symbol_table = symbol_table
 
+        self.codeGen = codeGen
+
         self.eof_error_occured = False
         self.debug = debug
 
@@ -116,9 +127,12 @@ class Parser :
             look = self.cur_symbol
             progressed = False
 
-            for edge , dest in cur_node.edges : 
+            for edge , dest , edge_actions in cur_node.edges : 
                 self.debug_print(f"## {cur_nt} : checking edge {edge} with look {look}")
                 if self.edge_match(edge , cur_nt , look) :
+                    ### codeGen
+                    self.do_actions(cur_node_id=cur_node.id , edge=edge , dest_id=dest , start=True)
+                    ###
                     self.debug_print(f"# {edge} matched with {look}")
                     if edge.lower()=="epsilon" : 
                         pt_par.add_children(PtNode("epsilon"))
@@ -136,6 +150,9 @@ class Parser :
                     child = PtNode(edge)
                     pt_par.add_children(child)
                     self.parse_nonterminal(edge , child)
+                    ### codeGen
+                    self.do_actions(cur_node_id=cur_node.id , edge=edge , dest_id=dest , start=False)
+                    ###
                     cur_node = self.graph.nodes[dest]
                     progressed = True
                     break
@@ -164,9 +181,12 @@ class Parser :
             
             look = self.cur_symbol
 
-            edge , dest = cur_node.edges[0]
+            edge , dest , edge_actions = cur_node.edges[0]
             self.debug_print(f"## {cur_nt} : checking edge {edge} with look {look}")
             if self.edge_match(edge , cur_nt , look) : 
+                ### codeGen
+                self.do_actions(cur_node_id=cur_node.id , edge=edge , dest_id=dest , start=True)
+                ###
                 self.debug_print(f"# {edge} matched with {look}")
                 if edge in self.terminals:
                     pt_par.add_children(PtNode(self.leaf_repr()))
@@ -177,6 +197,9 @@ class Parser :
                 child = PtNode(edge)
                 pt_par.add_children(child)
                 self.parse_nonterminal(edge , child)
+                ### codeGen
+                self.do_actions(cur_node_id=cur_node.id , edge=edge , dest_id=dest , start=False)
+                ###
                 cur_node = self.graph.nodes[dest]
                 continue
             if look == "$" : 
@@ -215,6 +238,21 @@ class Parser :
         self.cur_token = tok
         self.cur_symbol = self.token_to_symbol(tok)
 
+    def extract_action_params(self , action : str):
+        if "(" not in action : 
+            return None
+        return action[action.find('(')+1:action.rfind(')')].split(',')
+        
+
+    def do_actions(self , cur_node_id , edge , dest_id , start):
+        dict_key = "start" if start else "finish"
+        for action in self.graph.get_edge_actions(start=cur_node_id , edge=edge , dest=dest_id)[dict_key]:
+            if action in self.codeGen.sub_routines.keys():
+                self.codeGen.sub_routines[action](token=Token(self.cur_token[0] , self.cur_token[1]) , param=self.extract_action_params(action))
+            else : 
+                print(f"{action} doesnt support yet :(")
+        
+
     def token_to_symbol(self,tok) -> str:
         if tok[0].lower()=="keyword" or tok[0].lower()=="symbol" : 
             return tok[1]
@@ -247,6 +285,8 @@ class Parser :
         for i in self.nonTerminals : 
             if i in self.terminals : 
                 self.terminals.remove(i)
+        self.terminals = [i for i in self.terminals if i[0]!="#" ]
+        self.nonTerminals = [i for i in self.nonTerminals if i[0]!="#" ]
         return d
     
     def load_follow_first(self , path : str) -> dict[str , list[str]]:
@@ -261,12 +301,22 @@ class Parser :
         for v in self.grammar.keys():
             cur_id = self.graph.add_node(v)
             for path in self.grammar[v] : 
+                actions = []
                 cur_id = self.graph.get_first_non_terminal(v)
+                last_edge_details = (None , None , None)
                 for i in range(len(path)):
                     u = path[i]
+                    if u[0]=="#" : 
+                        actions.append(u)
+                        continue
                     new_id = self.graph.add_node(v , is_accept=(i==len(path)-1))
-                    self.graph.add_edge(cur_id , u , new_id)
+                    self.graph.add_edge(cur_id , u , new_id , actions={"start":actions , "finish":[]})
+                    last_edge_details = (cur_id , u , new_id)
                     cur_id = new_id
+                if len(actions) > 0 : 
+                    act_dict = self.graph.get_edge_actions(start=last_edge_details[0] , edge=last_edge_details[1] , dest=last_edge_details[2])
+                    act_dict["finish"] = actions
+
 
     def is_terminal(self , token : str) -> bool:
         return token in self.terminals

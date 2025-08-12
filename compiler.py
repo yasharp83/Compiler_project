@@ -9,6 +9,7 @@ from scanner.init_dfa import init_dfa
 from scanner.lexical_errors import LexicalErrors
 from scanner.symbol_table import SymbolTable
 from scanner.tokens import Tokens
+from code_gen.codeGen import CodeGen
 
 code_file_path="input.txt"
 lexical_error_file_path="lexical_errors.txt"
@@ -21,8 +22,10 @@ tokens = Tokens(tokens_file_path)
 symbol_table = SymbolTable(file_path=symbol_table_file_path)
 dfa = init_dfa()
 
+codeGen = CodeGen(symbol_table=symbol_table)
+
 P = Parser(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
-          tokens=tokens , symbol_table=symbol_table , syntax_errors=SyntaxErrors() , debug=False)
+          tokens=tokens , symbol_table=symbol_table , syntax_errors=SyntaxErrors() , codeGen=codeGen , debug=False)
 P.start()
 lexical_errors.update_file()
 tokens.update_file()
