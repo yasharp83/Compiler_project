@@ -1,2 +1,0 @@
-#5 : syntax error, missing ;
-#44 : syntax error, missing else

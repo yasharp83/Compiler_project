@@ -33,7 +33,7 @@ symbol_table.update_file()
 
 P.codeGen.set_exec_block("main")
 
-for l in P.codeGen.program_block : 
-    print(l)
+# for l in P.codeGen.program_block : 
+#     print(l)
 
 P.codeGen.export(file_path="output.txt")

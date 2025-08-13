@@ -6,9 +6,9 @@ class CodeGen:
     def __init__(self , 
                  symbol_table:SymbolTable ,
                  word_size=4 ,
-                 data_address=1000 ,
-                 stack_address=2000 ,
-                 temp_address=3000 , 
+                 data_address=2000 ,
+                 stack_address=4000 ,
+                 temp_address=6000 , 
                  ):
         
         self.symbol_table=symbol_table
@@ -111,7 +111,6 @@ class CodeGen:
         self.program_block.append("PLACE_HOLDER_HOLD")
     
     def code_gen_if_decide(self , token:Token , param:None):
-        print(self.semantic_stack)
         addr = self.semantic_stack.pop()
         stmt = self.semantic_stack.pop()
         cur_line = len(self.program_block)
@@ -266,14 +265,11 @@ class CodeGen:
         self.scopeFrames[scope_type].backpatch_jump()
     
     def scope_manage_add_scope(self , scope_type):
-        #scope_type=self.scope_type_stack.pop()
         self.scopeFrames[scope_type].add_scope()
         if scope_type== "f":
             self.stack_add_scope()
         
     def scope_manage_remove_scope(self , scope_type):
-        #self.delete_scope_flag=False
-        #scope_type= self.scope_type_stack.pop()
         self.scopeFrames[scope_type].remove_scope()
         if scope_type=="f" : 
             self.stack_del_scope()
@@ -291,14 +287,12 @@ class CodeGen:
         self.add_code("ASSIGN" , f"@{self.registers["sp"]}" , val)
 
     def stack_add_scope(self):
-        self.program_block.append("")
         self.stack_push(self.registers["fp"])
         self.add_code("ASSIGN" , f"{self.registers["sp"]}" , f"{self.registers["fp"]}")
     
     def stack_del_scope(self):
         self.add_code("ASSIGN" , f"{self.registers["fp"]}" , f"{self.registers["sp"]}")
         self.stack_pop(self.registers["fp"])
-        self.program_block.append("")
     
     def stack_allocate(self , size=1):
         self.add_code("ADD" , f"#{self.word_size * size}" , f"{self.registers["sp"]}" ,f"{self.registers["sp"]}")
@@ -317,8 +311,8 @@ class CodeGen:
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["sp"])
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["fp"])
 
-        self.add_code(op="ASSIGN" , r1=f"#9999" , r2=self.registers["ra"])
-        self.add_code(op="ASSIGN" , r1=f"#9999" , r2=self.registers["rv"])
+        self.add_code(op="ASSIGN" , r1=f"#99999" , r2=self.registers["ra"])
+        self.add_code(op="ASSIGN" , r1=f"#99999" , r2=self.registers["rv"])
         self.add_code(op="JP" , r1=f"{len(self.program_block)+5}")
         self.stack_pop(self.registers["rv"])
         self.add_code(op="PRINT" , r1=self.registers["rv"])
@@ -329,7 +323,6 @@ class CodeGen:
     def set_exec_block(self , name):
         record = self.symbol_table.find_record_by_id(name)
         line = int(self.semantic_stack[0])
-        print(line)
         self.add_code(op="JP" , r1=record.address , line=line)
 
     def add_code(self , op , r1="" , r2="" , r3="" , line=None):

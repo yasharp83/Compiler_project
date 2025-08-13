@@ -14,17 +14,26 @@ class Record:
         self.num_args = num_args
 
 class Scope:
-    def __init__(self , parent=None):
+    def __init__(self , parent=None , layer=0):
         self.records : list[Record] = []
         self.parent : Scope = parent
+        self.layer = layer
 
     def add(self , token : Token) -> bool:
-        if self.get_record(token_lexeme=token.lexeme) is None:
+        if self.get_record_local(token_lexeme=token.lexeme) is None:
             record = Record(token=token , scope=self)
             self.records.append(record)
             return True
         return False
     
+    def get_record_local(self , token_lexeme) -> Record:
+        for record in self.records : 
+            if record.token.lexeme == token_lexeme:
+                return record
+        if self.parent is not None and self.parent.layer!=0 : 
+            return self.parent.get_record(token_lexeme=token_lexeme)
+        return None
+        
     def get_record(self , token_lexeme) -> Record:
         for record in self.records : 
             if record.token.lexeme == token_lexeme:
@@ -44,7 +53,7 @@ class SymbolTable:
         return self.scopes[-1]
 
     def add_scope(self):
-        self.scopes.append(Scope(self.get_current_scope()))
+        self.scopes.append(Scope(self.get_current_scope() , layer=len(self.scopes)))
         return
     
     def remove_scope(self):

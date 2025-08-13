@@ -260,13 +260,8 @@ class Parser :
         dict_key = "start" if start else "finish"
         for action in self.graph.get_edge_actions(start=cur_node_id , edge=edge , dest=dest_id)[dict_key]:
             if self.extract_action_action(action) in self.codeGen.sub_routines.keys():
-                print("###")
                 self.debug_print(f"{action} , {self.cur_token[0]} , {self.cur_token[1]} called")
-                print(f"{action} , {self.cur_token[0]} , {self.cur_token[1]} called")
-                print(self.codeGen.semantic_stack)
                 self.codeGen.sub_routines[self.extract_action_action(action)](token=Token(self.cur_token[0] , self.cur_token[1]) , param=self.extract_action_params(action))
-                print(self.codeGen.semantic_stack)
-                print("###")
             else : 
                 print(f"{action} doesnt support yet :(")
         
