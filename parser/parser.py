@@ -17,6 +17,9 @@ class TdNode:
     def add_edge(self , edge: str , dest : int , actions:dict[str , list[str]]={"start":[] , "finish":[]}):
         self.edges.append((edge , dest , actions))
 
+    def __str__(self):
+        return f'{self.id} ,{self.component} , {self.is_accept} , {self.edges}'
+
 class TdGraph:
     def __init__(self):
         self.non_terminal_first : dict[str , int] = {}
@@ -45,6 +48,10 @@ class TdGraph:
             return self.non_terminal_first[component]
         except:
             return  -1
+    
+    def __str__(self):
+        return "\n".join([f"{i} : {self.nodes[i]}" for i in self.nodes.keys()]) + "\n" + str(self.non_terminal_first)
+
 
 class PtNode:
     def __init__(self,label : str):
@@ -141,6 +148,7 @@ class Parser :
                         break
                     
                     if edge in self.terminals:
+                        self.do_actions(cur_node_id=cur_node.id , edge=edge , dest_id=dest , start=False)
                         pt_par.add_children(PtNode(self.leaf_repr()))
                         self.advance()
                         cur_node = self.graph.nodes[dest]
@@ -189,6 +197,7 @@ class Parser :
                 ###
                 self.debug_print(f"# {edge} matched with {look}")
                 if edge in self.terminals:
+                    self.do_actions(cur_node_id=cur_node.id , edge=edge , dest_id=dest , start=False)
                     pt_par.add_children(PtNode(self.leaf_repr()))
                     self.advance()
                     cur_node = self.graph.nodes[dest]
@@ -242,13 +251,22 @@ class Parser :
         if "(" not in action : 
             return None
         return action[action.find('(')+1:action.rfind(')')].split(',')
-        
+    def extract_action_action(self , action : str):
+        if "(" not in action : 
+            return action[1:]
+        return action[1:action.find('(')]
 
     def do_actions(self , cur_node_id , edge , dest_id , start):
         dict_key = "start" if start else "finish"
         for action in self.graph.get_edge_actions(start=cur_node_id , edge=edge , dest=dest_id)[dict_key]:
-            if action in self.codeGen.sub_routines.keys():
-                self.codeGen.sub_routines[action](token=Token(self.cur_token[0] , self.cur_token[1]) , param=self.extract_action_params(action))
+            if self.extract_action_action(action) in self.codeGen.sub_routines.keys():
+                print("###")
+                self.debug_print(f"{action} , {self.cur_token[0]} , {self.cur_token[1]} called")
+                print(f"{action} , {self.cur_token[0]} , {self.cur_token[1]} called")
+                print(self.codeGen.semantic_stack)
+                self.codeGen.sub_routines[self.extract_action_action(action)](token=Token(self.cur_token[0] , self.cur_token[1]) , param=self.extract_action_params(action))
+                print(self.codeGen.semantic_stack)
+                print("###")
             else : 
                 print(f"{action} doesnt support yet :(")
         
@@ -296,6 +314,11 @@ class Parser :
                 line = line.strip().split()
                 d[line[0]] = line[1:]
         return d
+    
+    def tdGraph_accept_index(self , path):
+        for i in range(len(path)-1 , -1 , -1):
+            if path[i][0]!="#" : 
+                return i
         
     def makeTdGraph(self):
         for v in self.grammar.keys():
@@ -309,8 +332,9 @@ class Parser :
                     if u[0]=="#" : 
                         actions.append(u)
                         continue
-                    new_id = self.graph.add_node(v , is_accept=(i==len(path)-1))
-                    self.graph.add_edge(cur_id , u , new_id , actions={"start":actions , "finish":[]})
+                    new_id = self.graph.add_node(v , is_accept=(i==self.tdGraph_accept_index(path=path)))
+                    self.graph.add_edge(cur_id , u , new_id , actions={"start":actions.copy() , "finish":[]})
+                    actions.clear()
                     last_edge_details = (cur_id , u , new_id)
                     cur_id = new_id
                 if len(actions) > 0 : 

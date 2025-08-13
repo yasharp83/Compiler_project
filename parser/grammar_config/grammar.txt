@@ -3,45 +3,45 @@ DeclarationList -> Declaration DeclarationList | EPSILON
 Declaration -> DeclarationInitial DeclarationPrime #pop
 DeclarationInitial -> TypeSpecifier #define_id #push_id ID
 DeclarationPrime -> FunDeclarationPrime | VarDeclarationPrime
-VarDeclarationPrime -> ; | [ #push_num NUM ] #define_array;
+VarDeclarationPrime -> ; | [ #push_num NUM ] #define_array ;
 FunDeclarationPrime -> #define_function #main_function #scope_start(t) ( #function_input_start Params #function_input_finish ) #scope_start(f) CompoundStmt #scope_finish(f) #scope_finish(t) #function_return
 TypeSpecifier -> int | void
-Params -> int ID ParamPrime ParamList | void
+Params -> int #define_id #push_id ID ParamPrime #pop ParamList | void
 ParamList -> , Param ParamList | EPSILON
-Param -> DeclarationInitial ParamPrime
+Param -> DeclarationInitial ParamPrime #pop
 ParamPrime -> [ ] | EPSILON
 CompoundStmt -> { DeclarationList StatementList }
 StatementList -> Statement StatementList | EPSILON
 Statement -> ExpressionStmt | CompoundStmt | SelectionStmt | IterationStmt | ReturnStmt
-ExpressionStmt -> Expression ; | break ; | ;
-SelectionStmt -> if ( Expression ) Statement else Statement
-IterationStmt -> while ( Expression ) Statement
-ReturnStmt -> return ReturnStmtPrime
-ReturnStmtPrime -> ; | Expression ;
-Expression -> SimpleExpressionZegond | ID B
-B -> = Expression | [ Expression ] H | SimpleExpressionPrime
-H -> = Expression | G D C
+ExpressionStmt -> Expression #pop ; | break #jump_placeholder(c) ; | ;
+SelectionStmt -> if ( Expression ) #hold #scope_start(s) Statement #scope_finish(s) #jump_placeholder(t) #if_decide else #scope_start(s) Statement #scope_finish(s) #backpatch_jump(t)
+IterationStmt -> while #label ( Expression ) #hold #scope_start(c) Statement #while_jump #scope_finish(c) #if_decide
+ReturnStmt -> return ReturnStmtPrime #jump_placeholder(f)
+ReturnStmtPrime -> ; | #push_rv Expression #assign_stack #pop ;
+Expression -> SimpleExpressionZegond | #push_id ID B
+B -> = Expression #assign_stack | [ Expression ] #push_array H | SimpleExpressionPrime
+H -> = Expression #assign_stack | G D C
 SimpleExpressionZegond -> AdditiveExpressionZegond C
 SimpleExpressionPrime -> AdditiveExpressionPrime C
-C -> Relop AdditiveExpression | EPSILON
-Relop -> < | ==
+C -> Relop AdditiveExpression #operand_exec | EPSILON
+Relop -> #push_operand < |  #push_operand ==
 AdditiveExpression -> Term D
 AdditiveExpressionPrime -> TermPrime D
 AdditiveExpressionZegond -> TermZegond D
-D -> Addop Term D | EPSILON
-Addop -> + | -
+D -> Addop Term #operand_exec D | EPSILON
+Addop -> #push_operand + | #push_operand -
 Term -> SignedFactor G
 TermPrime -> SignedFactorPrime G
 TermZegond -> SignedFactorZegond G
-G -> * SignedFactor G | EPSILON
-SignedFactor -> + Factor | - Factor | Factor
+G -> #push_operand * SignedFactor #operand_exec G | EPSILON
+SignedFactor -> + Factor | #push_zero #push_operand - Factor #operand_exec | Factor
 SignedFactorPrime -> FactorPrime
-SignedFactorZegond -> + Factor | - Factor | FactorZegond
-Factor -> ( Expression ) | ID VarCallPrime | NUM
-VarCallPrime -> ( Args ) | VarPrime
-VarPrime -> [ Expression ] | EPSILON
-FactorPrime -> ( Args ) | EPSILON
-FactorZegond -> ( Expression ) | NUM
+SignedFactorZegond -> + Factor | #push_zero #push_operand - Factor #operand_exec | FactorZegond
+Factor -> ( Expression ) | #push_id ID VarCallPrime | #push_num NUM
+VarCallPrime -> ( #function_input_pass Args ) #function_call | VarPrime
+VarPrime -> [ Expression ] #push_array | EPSILON
+FactorPrime -> ( #function_input_pass Args ) #function_call | EPSILON
+FactorZegond -> ( Expression ) | #push_num NUM
 Args -> ArgList | EPSILON
 ArgList -> Expression ArgListPrime
 ArgListPrime -> , Expression ArgListPrime | EPSILON
