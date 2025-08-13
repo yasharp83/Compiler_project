@@ -41,6 +41,11 @@ class Scope:
         if self.parent is not None : 
             return self.parent.get_record(token_lexeme=token_lexeme)
         return None
+    def get_record_by_address(self , address) -> Record: 
+        for record in self.records : 
+            if record.address == address : 
+                return record
+        return None
 
 
 class SymbolTable:
@@ -68,6 +73,9 @@ class SymbolTable:
     
     def find_record_by_id(self , lexeme) -> Record:
         return self.get_current_scope().get_record(token_lexeme=lexeme)
+    
+    def get_record_by_address(self , address) -> Record: 
+        return self.get_current_scope().get_record_by_address(address=address)
     
     def update_file(self):
         #TODO

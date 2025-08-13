@@ -247,9 +247,9 @@ class Parser :
         self.cur_token = tok
         self.cur_symbol = self.token_to_symbol(tok)
 
-    def extract_action_params(self , action : str):
+    def extract_action_params(self , action : str) -> list[str]:
         if "(" not in action : 
-            return None
+            return []
         return action[action.find('(')+1:action.rfind(')')].split(',')
     def extract_action_action(self , action : str):
         if "(" not in action : 
@@ -261,7 +261,7 @@ class Parser :
         for action in self.graph.get_edge_actions(start=cur_node_id , edge=edge , dest=dest_id)[dict_key]:
             if self.extract_action_action(action) in self.codeGen.sub_routines.keys():
                 self.debug_print(f"{action} , {self.cur_token[0]} , {self.cur_token[1]} called")
-                self.codeGen.sub_routines[self.extract_action_action(action)](token=Token(self.cur_token[0] , self.cur_token[1]) , param=self.extract_action_params(action))
+                self.codeGen.sub_routines[self.extract_action_action(action)](token=Token(self.cur_token[0] , self.cur_token[1]) , param=self.extract_action_params(action)+[self.buffer.line])
             else : 
                 print(f"{action} doesnt support yet :(")
         

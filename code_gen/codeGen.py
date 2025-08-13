@@ -67,6 +67,7 @@ class CodeGen:
             "push_array" : self.code_gen_push_array ,
             "push_operand" : self.code_gen_push_operand ,
             "push_zero" : self.code_gen_push_zero ,
+            "push_type" : self.code_gen_push_type , 
 
             "pop" : self.code_gen_pop ,
             "hold" : self.code_gen_hold ,
@@ -97,10 +98,12 @@ class CodeGen:
             "jump_placeholder" : self.code_gen_jump_placeholder , 
             "backpatch_jump" : self.code_gen_backpatch_jump ,
 
+            "check_void" : self.code_gen_check_void , 
+
 
         }
     
-
+        self.semantic_errors = []
 
 
     def code_gen_pop(self , token:Token , param=None):
@@ -141,6 +144,8 @@ class CodeGen:
 
     def code_gen_push_id(self , token:Token , param=None):
         record = self.symbol_table.find_record_by_id(token.lexeme)
+        if record.address is None:
+            self.semantic_errors.append(f"#{param[0]} : Semantic Error! '{token.lexeme}' is not defined.")
         self.semantic_stack.append(record.address)
 
     def code_gen_push_num(self , token:Token , param=None):
@@ -160,11 +165,14 @@ class CodeGen:
     def code_gen_push_zero(self , token:Token , param:None):
         self.semantic_stack.append("#0")
 
+    def code_gen_push_type(self , token:Token , param:None):
+        self.semantic_stack.append(token.lexeme)
 
     def code_gen_define_id(self , token:Token , param=None):
         self.last_token = token
         record = self.symbol_table.find_record_by_id(token.lexeme)
         record.address = self.get_datablock_var()
+        record.token_type = self.semantic_stack.pop()
         if self.function_input_flag : 
             self.stack_pop(record.address)
         else:
@@ -229,6 +237,8 @@ class CodeGen:
 
 
     def code_gen_jump_placeholder(self , token:Token , param=None):
+        if param[0] == 'c' and len(self.scopeFrames['c'].adress_stack) == 0: 
+            self.semantic_errors.append(f"#{param[1]} : Semantic Error! No 'while' found for 'break'.")
         self.scope_manage_create_jump_placeholder(scope_type=param[0])
 
     def code_gen_backpatch_jump(self , token:Token , param:None):
@@ -244,6 +254,15 @@ class CodeGen:
         self.semantic_stack.append(len(self.program_block))
         self.program_block.append("MAIN_PLACE_HOLDER")
         self.semantic_stack.append(func)
+
+    def code_gen_check_void(self , token:Token , param=None):
+        addr = self.semantic_stack[-1]
+        if param[0] == "f" : 
+            return
+        record = self.symbol_table.get_record_by_address(address=addr)
+        if record.token_type == "void" : 
+            self.semantic_errors.append(f"#{param[1]} : Semantic Error! Illegal type of void for '{record.token.lexeme}'.")
+
 
     def get_datablock_var(self , size=1):
         ret = self.data_address
@@ -310,9 +329,8 @@ class CodeGen:
         self.symbol_table.find_record_by_id("output").address=5
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["sp"])
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["fp"])
-
-        self.add_code(op="ASSIGN" , r1=f"#99999" , r2=self.registers["ra"])
-        self.add_code(op="ASSIGN" , r1=f"#99999" , r2=self.registers["rv"])
+        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers["ra"])
+        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers["rv"])
         self.add_code(op="JP" , r1=f"{len(self.program_block)+5}")
         self.stack_pop(self.registers["rv"])
         self.add_code(op="PRINT" , r1=self.registers["rv"])
@@ -337,3 +355,8 @@ class CodeGen:
                 if '(' not in line:
                     line = "(ASSIGN , 0, 0 , )"
                 f.write(f"{i}\t{line}\n")
+
+    def export_semantic_errors(self , file_path="semantic_errors.txt"):
+        with open(file_path, "w") as f:
+            for i, line in enumerate(self.semantic_errors):
+                f.write(f"{line}\n")

@@ -1,14 +1,14 @@
 Program -> DeclarationList $
 DeclarationList -> Declaration DeclarationList | EPSILON
 Declaration -> DeclarationInitial DeclarationPrime #pop
-DeclarationInitial -> TypeSpecifier #define_id #push_id ID
-DeclarationPrime -> FunDeclarationPrime | VarDeclarationPrime
+DeclarationInitial -> #push_type TypeSpecifier #define_id #push_id ID
+DeclarationPrime -> #check_void(f) FunDeclarationPrime | #check_void(v) VarDeclarationPrime
 VarDeclarationPrime -> ; | [ #push_num NUM ] #define_array ;
 FunDeclarationPrime -> #define_function #main_function #scope_start(t) ( #function_input_start Params #function_input_finish ) #scope_start(f) CompoundStmt #scope_finish(f) #scope_finish(t) #function_return
 TypeSpecifier -> int | void
-Params -> int #define_id #push_id ID ParamPrime #pop ParamList | void
+Params -> #push_type int #define_id #push_id ID ParamPrime #pop ParamList | void
 ParamList -> , Param ParamList | EPSILON
-Param -> DeclarationInitial ParamPrime #pop
+Param -> DeclarationInitial #check_void(v) ParamPrime #pop
 ParamPrime -> [ ] | EPSILON
 CompoundStmt -> { DeclarationList StatementList }
 StatementList -> Statement StatementList | EPSILON
