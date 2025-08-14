@@ -1,0 +1,134 @@
+{
+  "version": 2,
+  "solution_signature": "compiler.py",
+  "can_submit_single_file": true,
+  "python_version": 3.9,
+  "packages": [
+    {
+      "name": "test_1",
+      "score": 30,
+      "tests": [
+        "test_t1"
+      ]
+    },
+    {
+      "name": "test_2",
+      "score": 30,
+      "tests": [
+        "test_t2"
+      ]
+    },
+    {
+      "name": "test_3",
+      "score": 30,
+      "tests": [
+        "test_t3"
+      ]
+    },
+    {
+      "name": "test_4",
+      "score": 30,
+      "tests": [
+        "test_t4"
+      ]
+    },
+    {
+      "name": "test_5",
+      "score": 30,
+      "tests": [
+        "test_t5"
+      ]
+    },
+    {
+      "name": "test_6",
+      "score": 30,
+      "tests": [
+        "test_t6"
+      ]
+    },
+    {
+      "name": "test_7",
+      "score": 30,
+      "tests": [
+        "test_t7"
+      ]
+    },
+    {
+      "name": "test_8",
+      "score": 30,
+      "tests": [
+        "test_t8"
+      ]
+    },
+    {
+      "name": "test_9",
+      "score": 30,
+      "tests": [
+        "test_t9"
+      ]
+    },
+    {
+      "name": "test_10",
+      "score": 30,
+      "tests": [
+        "test_t10"
+      ]
+    },
+    {
+      "name": "test_11",
+      "score": 25,
+      "tests": [
+        "test_s1"
+      ]
+    },
+    {
+      "name": "test_12",
+      "score": 25,
+      "tests": [
+        "test_s2"
+      ]
+    },
+    {
+      "name": "test_13",
+      "score": 25,
+      "tests": [
+        "test_s3"
+      ]
+    },
+    {
+      "name": "test_14",
+      "score": 25,
+      "tests": [
+        "test_s4"
+      ]
+    },
+    {
+      "name": "test_15",
+      "score": 25,
+      "tests": [
+        "test_r1"
+      ]
+    },
+    {
+      "name": "test_16",
+      "score": 25,
+      "tests": [
+        "test_r2"
+      ]
+    },
+    {
+      "name": "test_17",
+      "score": 25,
+      "tests": [
+        "test_r3"
+      ]
+    },
+    {
+      "name": "test_18",
+      "score": 25,
+      "tests": [
+        "test_r4"
+      ]
+    }
+  ]
+}

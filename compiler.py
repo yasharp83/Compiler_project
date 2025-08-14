@@ -21,7 +21,6 @@ buffer = BufferedFileReader(file_path=code_file_path)
 tokens = Tokens(tokens_file_path)
 symbol_table = SymbolTable(file_path=symbol_table_file_path)
 dfa = init_dfa()
-
 codeGen = CodeGen(symbol_table=symbol_table)
 
 P = Parser(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
@@ -30,7 +29,6 @@ P.start()
 lexical_errors.update_file()
 tokens.update_file()
 symbol_table.update_file()
-
 P.codeGen.set_exec_block("main")
 P.codeGen.export(file_path="output.txt")
 P.codeGen.export_semantic_errors(file_path="semantic_errors.txt")

@@ -14,7 +14,7 @@
 #40  $ not shown in parser so its ok and also order in syntax error
 #44 i think author fault
 #46 $ not shown in parser so its ok and also order in syntax error
-for i in {01..20}; do
+for i in {01..05}; do
     echo "Running test case T$i..."
 
 

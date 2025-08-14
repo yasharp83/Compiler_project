@@ -18,18 +18,15 @@ class CodeGen:
         self.stack_address=stack_address
         self.temp_addres=temp_address
 
-
         self.program_block = []
         self.semantic_stack = []
         
-
         self.registers = {
             "sp" : self.get_datablock_var(), 
             "fp" : self.get_datablock_var(), 
             "ra" : self.get_datablock_var(), 
             "rv" : self.get_datablock_var(),
         }
-
 
         self.scope_type_stack = []
         self.scopeFrames : dict[str, ScopeFrame] = {
@@ -43,14 +40,12 @@ class CodeGen:
         self.function_input_flag = False
         self.last_token = None
         self.function_input_pointers = []
-
         self.function_data_pointer = 0
         self.function_temp_pointer = 0
 
         self.is_main_declared=False
 
         self.add_template()
-
 
         self.operands_map = {
             "+" : "ADD" , 
@@ -68,40 +63,28 @@ class CodeGen:
             "push_operand" : self.code_gen_push_operand ,
             "push_zero" : self.code_gen_push_zero ,
             "push_type" : self.code_gen_push_type , 
-
             "pop" : self.code_gen_pop ,
             "hold" : self.code_gen_hold ,
             "if_decide" : self.code_gen_if_decide , 
             "while_jump" : self.code_gen_while_jump ,
             "label" : self.code_gen_label , 
             "assign" : self.code_gen_assign ,
-            
-        
             "operand_exec" : self.code_gen_operand_exec , 
-
             "define_id" : self.code_gen_define_id , 
             "define_array" : self.code_gen_define_array , 
             "type_to_array" : self.code_gen_type_to_array ,
-            "define_function" : self.code_gen_define_function ,
-
-            "main_function" : self.code_gen_main_function , 
-
+            "define_function" : self.code_gen_define_function , 
             "scope_start" : self.code_gen_scope_start , 
             "scope_finish" : self.code_gen_scope_finish ,
-
             "function_input_start" : self.code_gen_function_input_start ,
             "function_input_finish" : self.code_gen_function_input_finish , 
             "function_input_pass" : self.code_gen_function_input_pass , 
             "function_call" : self.code_gen_function_call , 
-
             "function_return" : self.code_gen_function_return , 
-
             "jump_placeholder" : self.code_gen_jump_placeholder , 
             "backpatch_jump" : self.code_gen_backpatch_jump ,
-
             "check_void" : self.code_gen_check_void , 
-
-
+            "main_function" : self.code_gen_main_function ,
         }
     
         self.semantic_errors = []
@@ -147,7 +130,6 @@ class CodeGen:
         
         
     def check_type_match(self , r1 , r2 , line):
-        #TODO making cleaner
         r1_record = self.symbol_table.get_record_by_address(r1)
         r2_record = self.symbol_table.get_record_by_address(r2)
         int_str = "int"
@@ -220,7 +202,7 @@ class CodeGen:
             self.add_code(op="ASSIGN" , r1="#0" , r2=f"{record.address}")
 
     def code_gen_define_array(self , token:Token , param=None):
-        self.add_code(op="ASSIGN" , r1=f"{self.registers["sp"]}" , r2=self.semantic_stack[-2])
+        self.add_code(op="ASSIGN" , r1=f"{self.registers['sp']}" , r2=self.semantic_stack[-2])
         size = self.semantic_stack.pop()
         size = int(size[1:])
         self.stack_allocate(size=size)
@@ -260,7 +242,7 @@ class CodeGen:
 
 
     def code_gen_function_return(self , token:Token , param=None):
-        self.add_code(op="JP" , r1=f"@{self.registers["ra"]}")
+        self.add_code(op="JP" , r1=f"@{self.registers['ra']}")
 
     def code_gen_function_input_pass(self , token:Token , param=None):
         self.function_input_pointers.append(len(self.semantic_stack))
@@ -289,14 +271,11 @@ class CodeGen:
         for ind  in range(len(func_record.args_type)) : 
             if arg_types_input_func[ind][1] is None : 
                 continue
-                #TODO
             if arg_types_input_func[ind][1].token_type is None : 
                 continue 
-                #TODO
             if arg_types_input_func[ind][1].token_type != func_record.args_type[ind] : 
                 self.semantic_errors.append(f"#{param[0]} : Semantic Error! Mismatch in type of argument {ind+1} of '{func_record.token.lexeme}'. Expected '{func_record.args_type[ind]}' but got '{arg_types_input_func[ind][1].token_type}' instead.")
         
-
         self.add_code(op="ASSIGN" , r1=f"#{len(self.program_block)+2}" , r2=self.registers["ra"] )
         self.add_code(op="JP" , r1=func_addr)
 
@@ -373,23 +352,23 @@ class CodeGen:
     #STACK ops
     
     def stack_push(self , val):
-        self.add_code("ASSIGN" , val , f"@{self.registers["sp"]}")
-        self.add_code("ADD" , f"{self.registers["sp"]}" , f"#{self.word_size}" , f"{self.registers["sp"]}")
+        self.add_code("ASSIGN" , val , f"@{self.registers['sp']}")
+        self.add_code("ADD" , f"{self.registers['sp']}" , f"#{self.word_size}" , f"{self.registers['sp']}")
     
     def stack_pop(self , val):
-        self.add_code("SUB" , f"{self.registers["sp"]}" , f"#{self.word_size}" , f"{self.registers["sp"]}")
-        self.add_code("ASSIGN" , f"@{self.registers["sp"]}" , val)
+        self.add_code("SUB" , f"{self.registers['sp']}" , f"#{self.word_size}" , f"{self.registers['sp']}")
+        self.add_code("ASSIGN" , f"@{self.registers['sp']}" , val)
 
     def stack_add_scope(self):
         self.stack_push(self.registers["fp"])
-        self.add_code("ASSIGN" , f"{self.registers["sp"]}" , f"{self.registers["fp"]}")
+        self.add_code("ASSIGN" , f"{self.registers['sp']}" , f"{self.registers['fp']}")
     
     def stack_del_scope(self):
-        self.add_code("ASSIGN" , f"{self.registers["fp"]}" , f"{self.registers["sp"]}")
+        self.add_code("ASSIGN" , f"{self.registers['fp']}" , f"{self.registers['sp']}")
         self.stack_pop(self.registers["fp"])
     
     def stack_allocate(self , size=1):
-        self.add_code("ADD" , f"#{self.word_size * size}" , f"{self.registers["sp"]}" ,f"{self.registers["sp"]}")
+        self.add_code("ADD" , f"#{self.word_size * size}" , f"{self.registers['sp']}" ,f"{self.registers['sp']}")
 
     def stack_store_registers(self , registers=["sp" , "fp" , "ra"]):
         for rg in registers : 
@@ -405,14 +384,14 @@ class CodeGen:
         self.symbol_table.find_record_by_id("output").token_type="void"
         self.symbol_table.find_record_by_id("output").args_type=['int']
         self.symbol_table.find_record_by_id("output").num_args=1
-        self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["sp"])
-        self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["fp"])
-        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers["ra"])
-        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers["rv"])
+        self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers['sp'])
+        self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers['fp'])
+        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers['ra'])
+        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers['rv'])
         self.add_code(op="JP" , r1=f"{len(self.program_block)+5}")
-        self.stack_pop(self.registers["rv"])
-        self.add_code(op="PRINT" , r1=self.registers["rv"])
-        self.add_code(op="JP" , r1=f"@{self.registers["ra"]}")
+        self.stack_pop(self.registers['rv'])
+        self.add_code(op="PRINT" , r1=self.registers['rv'])
+        self.add_code(op="JP" , r1=f"@{self.registers['ra']}")
 
         self.get_datablock_var()
 
