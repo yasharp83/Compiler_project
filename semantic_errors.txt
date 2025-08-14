@@ -1,1 +1,1 @@
-#6 : Semantic Error! Type mismatch in operands, Got array instead of int.
+The input program is semantically correct.
