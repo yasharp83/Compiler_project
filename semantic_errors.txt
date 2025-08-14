@@ -1,5 +1,1 @@
-#14 : Semantic Error! 'b' is not defined.
-#18 : Semantic Error! 'bound' is not defined.
-#19 : Semantic Error! 'bound' is not defined.
-#23 : Semantic Error! 'bound' is not defined.
-#32 : Semantic Error! No 'while' found for 'break'.
+#6 : Semantic Error! Type mismatch in operands, Got array instead of int.

@@ -3,13 +3,13 @@ DeclarationList -> Declaration DeclarationList | EPSILON
 Declaration -> DeclarationInitial DeclarationPrime #pop
 DeclarationInitial -> #push_type TypeSpecifier #define_id #push_id ID
 DeclarationPrime -> #check_void(f) FunDeclarationPrime | #check_void(v) VarDeclarationPrime
-VarDeclarationPrime -> ; | [ #push_num NUM ] #define_array ;
+VarDeclarationPrime -> ; | [ #push_num NUM ] #define_array #type_to_array ;
 FunDeclarationPrime -> #define_function #main_function #scope_start(t) ( #function_input_start Params #function_input_finish ) #scope_start(f) CompoundStmt #scope_finish(f) #scope_finish(t) #function_return
 TypeSpecifier -> int | void
 Params -> #push_type int #define_id #push_id ID ParamPrime #pop ParamList | void
 ParamList -> , Param ParamList | EPSILON
 Param -> DeclarationInitial #check_void(v) ParamPrime #pop
-ParamPrime -> [ ] | EPSILON
+ParamPrime -> [ ] #type_to_array | EPSILON
 CompoundStmt -> { DeclarationList StatementList }
 StatementList -> Statement StatementList | EPSILON
 Statement -> ExpressionStmt | CompoundStmt | SelectionStmt | IterationStmt | ReturnStmt
@@ -17,10 +17,10 @@ ExpressionStmt -> Expression #pop ; | break #jump_placeholder(c) ; | ;
 SelectionStmt -> if ( Expression ) #hold #scope_start(s) Statement #scope_finish(s) #jump_placeholder(t) #if_decide else #scope_start(s) Statement #scope_finish(s) #backpatch_jump(t)
 IterationStmt -> while #label ( Expression ) #hold #scope_start(c) Statement #while_jump #scope_finish(c) #if_decide
 ReturnStmt -> return ReturnStmtPrime #jump_placeholder(f)
-ReturnStmtPrime -> ; | #push_rv Expression #assign_stack #pop ;
+ReturnStmtPrime -> ; | #push_rv Expression #assign #pop ;
 Expression -> SimpleExpressionZegond | #push_id ID B
-B -> = Expression #assign_stack | [ Expression ] #push_array H | SimpleExpressionPrime
-H -> = Expression #assign_stack | G D C
+B -> = Expression #assign | [ Expression ] #push_array H | SimpleExpressionPrime
+H -> = Expression #assign | G D C
 SimpleExpressionZegond -> AdditiveExpressionZegond C
 SimpleExpressionPrime -> AdditiveExpressionPrime C
 C -> Relop AdditiveExpression #operand_exec | EPSILON

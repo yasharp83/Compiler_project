@@ -74,13 +74,14 @@ class CodeGen:
             "if_decide" : self.code_gen_if_decide , 
             "while_jump" : self.code_gen_while_jump ,
             "label" : self.code_gen_label , 
-            "assign_stack" : self.code_gen_assign_stack ,
+            "assign" : self.code_gen_assign ,
             
         
             "operand_exec" : self.code_gen_operand_exec , 
 
             "define_id" : self.code_gen_define_id , 
             "define_array" : self.code_gen_define_array , 
+            "type_to_array" : self.code_gen_type_to_array ,
             "define_function" : self.code_gen_define_function ,
 
             "main_function" : self.code_gen_main_function , 
@@ -128,8 +129,10 @@ class CodeGen:
     def code_gen_label(self , token:Token , param:None):
         self.semantic_stack.append(len(self.program_block))
 
-    def code_gen_assign_stack(self , token:Token , param:None):
-        self.add_code(op="ASSIGN" , r1=self.semantic_stack.pop() , r2 = self.semantic_stack[-1])
+    def code_gen_assign(self , token:Token , param:None):
+        r1 , r2 = self.semantic_stack.pop() , self.semantic_stack[-1]
+        self.add_code(op="ASSIGN" , r1=r1 , r2 = r2)
+        self.check_type_match(r1=r2 , r2=r1 , line = param[0])
 
     def code_gen_push_operand(self , token:Token , param:None):
         self.semantic_stack.append(self.operands_map[token.lexeme])
@@ -140,12 +143,50 @@ class CodeGen:
         self.semantic_stack.append(r3)
         self.add_code(op=op , r1=r1 , r2=r2 , r3=r3)
 
+        self.check_type_match(r1=r1 , r2=r2 , line = param[0])
+        
+        
+    def check_type_match(self , r1 , r2 , line):
+        #TODO making cleaner
+        r1_record = self.symbol_table.get_record_by_address(r1)
+        r2_record = self.symbol_table.get_record_by_address(r2)
+        int_str = "int"
+        if r1_record is None :
+            if r2_record is None : 
+                return
+            if r2_record.token_type is None : 
+                return
+            if r2_record.token_type != "int" : 
+                self.semantic_errors.append(f"#{line} : Semantic Error! Type mismatch in operands, Got {int_str} instead of {r2_record.token_type}.")
+            return
+        if r1_record.token_type is None : 
+            if r2_record is None : 
+                return
+            if r2_record.token_type is None : 
+                return
+            if r2_record.token_type != "int" : 
+                self.semantic_errors.append(f"#{line} : Semantic Error! Type mismatch in operands, Got {int_str} instead of {r2_record.token_type}.")
+            return
+        if r2_record is None : 
+            if r1_record.token_type != "int" : 
+                self.semantic_errors.append(f"#{line} : Semantic Error! Type mismatch in operands, Got {r1_record.token_type} instead of {int_str}.")
+            return
+        if r2_record.token_type is None :
+            if r1_record.token_type != "int" : 
+                self.semantic_errors.append(f"#{line} : Semantic Error! Type mismatch in operands, Got {r1_record.token_type} instead of {int_str}.")
+            return
+        if r1_record.token_type != r2_record.token_type : 
+            self.semantic_errors.append(f"#{line} : Semantic Error! Type mismatch in operands, Got {r1_record.token_type} instead of {r2_record.token_type}.")
+            return
+
 
 
     def code_gen_push_id(self , token:Token , param=None):
         record = self.symbol_table.find_record_by_id(token.lexeme)
-        if record.address is None:
+        if record is None or record.address is None:
             self.semantic_errors.append(f"#{param[0]} : Semantic Error! '{token.lexeme}' is not defined.")
+            self.semantic_stack.append(None)
+            return
         self.semantic_stack.append(record.address)
 
     def code_gen_push_num(self , token:Token , param=None):
@@ -155,11 +196,11 @@ class CodeGen:
         self.semantic_stack.append(self.registers["rv"])
 
     def code_gen_push_array(self , token:Token , param=None):
-        size = self.semantic_stack.pop()
-        temp = self.get_tempblock_var()
-        self.add_code(op="MULT" , r1=f"#{self.word_size}" , r2=size , r3=temp)
         ind = self.semantic_stack.pop()
-        self.add_code(op="ADD" , r1=ind , r2=temp , r3=temp)
+        temp = self.get_tempblock_var()
+        self.add_code(op="MULT" , r1=f"#{self.word_size}" , r2=ind , r3=temp)
+        offset = self.semantic_stack.pop()
+        self.add_code(op="ADD" , r1=offset , r2=temp , r3=temp)
         self.semantic_stack.append(f"@{temp}")
         
     def code_gen_push_zero(self , token:Token , param:None):
@@ -184,10 +225,17 @@ class CodeGen:
         size = int(size[1:])
         self.stack_allocate(size=size)
 
+    def code_gen_type_to_array(self , token:Token , param=None):
+        addr = self.semantic_stack[-1]
+        record = self.symbol_table.get_record_by_address(address=addr)
+        if record is not None : 
+            record.token_type = "array"
+
     def code_gen_define_function(self , token:Token , param=None):
         self.function_data_pointer , self.function_temp_pointer = self.data_address , self.temp_addres
         record = self.symbol_table.find_record_by_id(self.last_token.lexeme)
         record.address = len(self.program_block)
+        record.is_function = True
         self.program_block[-1] = ""
 
     
@@ -203,7 +251,13 @@ class CodeGen:
         self.function_input_flag = True
     
     def code_gen_function_input_finish(self , token:Token , param=None):
+        func_record = self.symbol_table.get_last_function_record()
+        func_record.args_type = []
+        for rec in self.symbol_table.get_current_scope().records:
+            func_record.args_type.append(rec.token_type)
+        func_record.num_args = len(func_record.args_type)
         self.function_input_flag = False
+
 
     def code_gen_function_return(self , token:Token , param=None):
         self.add_code(op="JP" , r1=f"@{self.registers["ra"]}")
@@ -219,11 +273,32 @@ class CodeGen:
         self.stack_store_registers()
         
         pointer = self.function_input_pointers.pop()
+        num_inputs_func = len(self.semantic_stack) - pointer
+        arg_types_input_func = []
         for f_i in range(pointer , len(self.semantic_stack)):
-            self.stack_push(self.semantic_stack.pop())
+            in_addr = self.semantic_stack.pop()
+            self.stack_push(in_addr)
+            arg_types_input_func.append((in_addr , self.symbol_table.get_record_by_address(in_addr)))
+        arg_types_input_func = list(reversed(arg_types_input_func))
+
+        func_addr = self.semantic_stack.pop() 
+        func_record = self.symbol_table.scopes[0].get_record_by_address(address=func_addr)
+        if func_record.num_args!=num_inputs_func:
+            self.semantic_errors.append(f"#{param[0]} : Semantic Error! Mismatch in numbers of arguments of '{func_record.token.lexeme}'.")
+
+        for ind  in range(len(func_record.args_type)) : 
+            if arg_types_input_func[ind][1] is None : 
+                continue
+                #TODO
+            if arg_types_input_func[ind][1].token_type is None : 
+                continue 
+                #TODO
+            if arg_types_input_func[ind][1].token_type != func_record.args_type[ind] : 
+                self.semantic_errors.append(f"#{param[0]} : Semantic Error! Mismatch in type of argument {ind+1} of '{func_record.token.lexeme}'. Expected '{func_record.args_type[ind]}' but got '{arg_types_input_func[ind][1].token_type}' instead.")
+        
 
         self.add_code(op="ASSIGN" , r1=f"#{len(self.program_block)+2}" , r2=self.registers["ra"] )
-        self.add_code(op="JP" , r1=self.semantic_stack.pop())
+        self.add_code(op="JP" , r1=func_addr)
 
         self.stack_load_registers()
         for d in range(self.temp_addres , self.function_temp_pointer , -self.word_size):
@@ -327,6 +402,9 @@ class CodeGen:
     def add_template(self):
         self.symbol_table.add(Token("ID" , "output"))
         self.symbol_table.find_record_by_id("output").address=5
+        self.symbol_table.find_record_by_id("output").token_type="void"
+        self.symbol_table.find_record_by_id("output").args_type=['int']
+        self.symbol_table.find_record_by_id("output").num_args=1
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["sp"])
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers["fp"])
         self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers["ra"])
