@@ -32,9 +32,5 @@ tokens.update_file()
 symbol_table.update_file()
 
 P.codeGen.set_exec_block("main")
-
-# for l in P.codeGen.program_block : 
-#     print(l)
-
 P.codeGen.export(file_path="output.txt")
 P.codeGen.export_semantic_errors(file_path="semantic_errors.txt")

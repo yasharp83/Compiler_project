@@ -428,6 +428,10 @@ class CodeGen:
             self.program_block.append(f"({op}, {r1}, {r2}, {r3})")
 
     def export(self , file_path="output.txt"):
+        if len(self.semantic_errors)!=0 : 
+            with open(file_path, "w") as f:
+                    f.write(f"The code has not been generated.")
+            return
         with open(file_path, "w") as f:
             for i, line in enumerate(self.program_block):
                 if '(' not in line:
@@ -435,6 +439,10 @@ class CodeGen:
                 f.write(f"{i}\t{line}\n")
 
     def export_semantic_errors(self , file_path="semantic_errors.txt"):
+        if len(self.semantic_errors)==0 : 
+            with open(file_path, "w") as f:
+                    f.write(f"The input program is semantically correct.")
+            return
         with open(file_path, "w") as f:
             for i, line in enumerate(self.semantic_errors):
                 f.write(f"{line}\n")
