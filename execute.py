@@ -1,9 +1,9 @@
 import os
 
-from phase3_tester.test.vm import run
+from Tests.phase3_tester.test.vm import run
 
 
-def exec(exe_path='output.txt' , result_path='result.txt', error_path='error.txt'):
+def exec(exe_path='output.txt' , result_path='expected.txt', error_path='error.txt'):
     if not os.path.exists(exe_path):
         print(f"{exe_path} not found.")
         return

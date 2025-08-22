@@ -1,0 +1,52 @@
+
+
+int Div(int a, int b) {
+    int biggestPow2;
+    int ans ; 
+    ans = 0 ; 
+    while(1){
+        if (a < b) {
+            return ans;
+        } else {
+            biggestPow2 = 1;
+            while (biggestPow2 * b * 2 < a + 1) {
+                biggestPow2 = 2 * biggestPow2;
+            }
+            ans = ans + biggestPow2;
+            a = a - biggestPow2 * b ; 
+        }
+    }
+}
+
+
+
+void main(void) {
+    int msk ; 
+    int Length;
+    int Ar[16];
+    int i;
+    int tmp;
+    int ans;
+    int tmp2 ; 
+    int a ; 
+    Length = 16;
+    msk = 0 ; 
+    while( msk < 16 ){
+        a = msk ; 
+        i = 0;
+        ans = 0;
+        while (a > 0) {
+            tmp2 = a ; 
+            a = Div(a, 2);
+            tmp = tmp2 - 2 * a ; 
+            Ar[i] = tmp;
+            i = i + 1;
+        }
+        while (i > 0) {
+            i = i - 1;
+            ans = ans * 10 + Ar[i];
+        }
+        output(ans);
+        msk = msk + 1 ; 
+    }
+}

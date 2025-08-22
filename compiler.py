@@ -28,7 +28,11 @@ def compile(
 
     P = Parser(buffer=buffer , dfa=dfa , lexical_errors=lexical_errors , 
             tokens=tokens , symbol_table=symbol_table , syntax_errors=SyntaxErrors() , codeGen=codeGen , debug=False)
-    P.start()
+    try : 
+        P.start()
+    except :
+        print(":((((((")
+
     lexical_errors.update_file()
     tokens.update_file()
     symbol_table.update_file()

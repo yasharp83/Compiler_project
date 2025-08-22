@@ -1,0 +1,28 @@
+
+
+int Div(int a, int b) {
+    int biggestPow2;
+    int ans ; 
+    ans = 0 ; 
+    while(1){
+        if (a < b) {
+            return ans;
+        } else {
+            biggestPow2 = 1;
+            while (biggestPow2 * b * 2 < a + 1) {
+                biggestPow2 = 2 * biggestPow2;
+            }
+            ans = ans + biggestPow2;
+            a = a - biggestPow2 * b ; 
+        }
+    }
+}
+
+
+void main(void) {
+    int a ; 
+    int b ; 
+    a = 100 ; 
+    b = 7 ; 
+    output(Div(a , b));
+}

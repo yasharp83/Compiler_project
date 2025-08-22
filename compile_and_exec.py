@@ -9,7 +9,7 @@ import sys
 
 def main():
     input_file = "input.txt"
-    output_file = "result.txt"  
+    output_file = "expected.txt"  
     error_file = "error.txt"
 
     parser = argparse.ArgumentParser()

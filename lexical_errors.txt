@@ -1,3 +1,2 @@
-2.	 (print_, Invalid input)
-27.	 (print_, Invalid input)
-45.	 (print_, Invalid input)
+123.	 (>, Invalid input)
+129.	 (>, Invalid input)

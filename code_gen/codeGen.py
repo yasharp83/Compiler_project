@@ -6,9 +6,9 @@ class CodeGen:
     def __init__(self , 
                  symbol_table:SymbolTable ,
                  word_size=4 ,
-                 data_address=2000 ,
-                 stack_address=4000 ,
-                 temp_address=6000 , 
+                 data_address=20000 ,
+                 stack_address=40000 ,
+                 temp_address=60000 , 
                  ):
         
         self.symbol_table=symbol_table
@@ -386,8 +386,8 @@ class CodeGen:
         self.symbol_table.find_record_by_id("output").num_args=1
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers['sp'])
         self.add_code(op="ASSIGN" , r1=f"#{self.stack_address}" , r2=self.registers['fp'])
-        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers['ra'])
-        self.add_code(op="ASSIGN" , r1=f"#10000" , r2=self.registers['rv'])
+        self.add_code(op="ASSIGN" , r1=f"#100000" , r2=self.registers['ra'])
+        self.add_code(op="ASSIGN" , r1=f"#100000" , r2=self.registers['rv'])
         self.add_code(op="JP" , r1=f"{len(self.program_block)+5}")
         self.stack_pop(self.registers['rv'])
         self.add_code(op="PRINT" , r1=self.registers['rv'])
