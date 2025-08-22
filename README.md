@@ -12,7 +12,7 @@ This compiler translates a C-like programming language into intermediate code th
 
 ### Authors
 - Yashar Paymai (401100325)
-- Pouria Erfanzadeh (401011180)
+- Pourya Erfanzadeh (401110918)
 - Group: G3
 
 ## Language Features
