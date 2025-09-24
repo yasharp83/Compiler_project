@@ -9,6 +9,9 @@ def exec(exe_path='output.txt' , result_path='expected.txt', error_path='error.t
         return
     with open(exe_path, 'r') as f:
         code = f.read()
+    if code[0]!= '0':
+        print("EXEC : Invalid code format.")
+        return
     code = code.strip().splitlines()
     result_file = open(result_path, "w")
     error_file = open(error_path, "w")

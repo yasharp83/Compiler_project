@@ -1,237 +1,86 @@
-# Compiler Project - Phase 3
+# Mini C-like Compiler 
 
-A complete compiler implementation for a C-like programming language, developed as part of a university compiler course. This project implements lexical analysis, syntax analysis, semantic analysis, and code generation phases of a compiler.
-
-## Project Overview
-
-This compiler translates a C-like programming language into intermediate code that can be executed by a virtual machine. The project is structured in phases:
-
-- **Phase 1**: Lexical Analysis (Scanner)
-- **Phase 2**: Syntax Analysis (Parser) 
-- **Phase 3**: Semantic Analysis & Code Generation
-
-### Authors
-- Yashar Paymai (401100325)
-- Pourya Erfanzadeh (401110918)
-- Group: G3
-
-## Language Features
-
-### Supported Data Types
-- `int` - Integer values
-- `void` - For functions that don't return values
-
-### Variable Declarations
-```c
-int x;           // Simple variable
-int arr[10];     // Array declaration
-```
-
-### Function Declarations
-```c
-int add(int a, int b) {
-    return a + b;
-}
-
-void printNumber(int x) {
-    output(x);
-}
-```
-
-### Control Structures
-
-#### If-Else Statements
-```c
-if (condition) {
-    // statements
-} else {
-    // statements
-}
-```
-
-#### While Loops
-```c
-while (condition) {
-    // statements
-}
-```
-
-### Operators
-- **Arithmetic**: `+`, `-`, `*`
-- **Comparison**: `<`, `==`
-- **Assignment**: `=`
-
-### Built-in Functions
-- `output(value)` - Prints a value to the output
-- `return value` - Returns from a function
+A three-phase educational compiler for a C-like subset that performs lexical analysis, transition‑diagram top‑down parsing, semantic checks, and intermediate code generation to a simple stack-based VM.
 
 ## Project Structure
 
-```
-Compiler_project/
-├── scanner/                 # Lexical analyzer
-│   ├── DFA.py              # Deterministic Finite Automaton
-│   ├── buffer.py           # Input buffer management
-│   ├── tokens.py           # Token definitions
-│   └── symbol_table.py     # Symbol table implementation
-├── parser/                  # Syntax analyzer
-│   ├── parser.py           # Main parser implementation
-│   ├── syntax_errors.py    # Syntax error handling
-│   └── grammar_config/     # Grammar configuration files
-├── code_gen/               # Code generation
-│   ├── codeGen.py          # Main code generator
-│   └── scopeFrame.py       # Scope frame management
-├── Tests/                  # Test cases and virtual machine
-│   └── phase3_tester/      # Phase 3 test suite
-├── compiler.py             # Main compiler entry point
-├── compile_and_exec.py     # Compile and execute script
-└── execute.py              # Execution engine
-```
+- `scanner/`: DFA-based lexer producing `tokens.txt`, `lexical_errors.txt`, `symbol_table.txt`
+- `parser/`: Transition‑diagram predictive parser building parse tree (`parse_tree.txt`) and reporting `syntax_errors.txt`
+- `code_gen/`: Semantic actions + IR generation to `output.txt` and `semantic_errors.txt`
+- `compiler.py`: Wires all phases; default input `input.txt`
+- `compile_and_exec.py`: CLI to compile and execute on bundled VM
+- `execute.py`: Runs `output.txt` on test VM and writes results/errors
+- `Tests/phase3_tester/`: Test harness and VM
 
-## How to Use
+## Quick Start
 
-### Prerequisites
-- Python 3.x
 
-### Basic Usage
+1) Put your source program in `input.txt` (or point to another file).
+2) Compile:
 
-1. **Write your code** in a text file (e.g., `input.txt`)
-
-2. **Compile and execute** using one of these methods:
-
-#### Method 1: Using the main compiler
 ```bash
-python compiler.py
+python3 compiler.py
 ```
 
-#### Method 2: Using the compile and execute script
+This generates:
+- `tokens.txt`, `lexical_errors.txt`, `symbol_table.txt`
+- `parse_tree.txt`, `syntax_errors.txt`
+- `output.txt` (IR/VM code), `semantic_errors.txt`
+
+3) Run the generated code on the VM:
+
 ```bash
-python compile_and_exec.py
+python3 execute.py
 ```
 
-#### Method 3: With custom file paths
+The VM writes program output to `expected.txt` and runtime errors to `error.txt`.
+
+### One‑shot compile + execute
+
 ```bash
-python compile_and_exec.py -i input.txt -o expected.txt -e error.txt
+python3 compile_and_exec.py -i input.txt -o expected.txt -e error.txt
 ```
 
-### Output Files
-The compiler generates several output files:
-- `tokens.txt` - List of tokens with line numbers
-- `parse_tree.txt` - Parse tree representation
-- `symbol_table.txt` - Symbol table contents
-- `output.txt` - Generated intermediate code
-- `semantic_errors.txt` - Semantic analysis errors
-- `syntax_errors.txt` - Syntax analysis errors
-- `lexical_errors.txt` - Lexical analysis errors
+Flags are optional; defaults are shown above.
 
-## Code Example
+## Samples
 
-Here's a complete example demonstrating various language features:
+Sample program :
 
 ```c
-// Function to calculate factorial
-int factorial(int n) {
-    if (n <= 1) {
-        return 1;
+int fib(int n) {
+    int f;
+    if (n < 2) {
+	f = 1;
     } else {
-        return n * factorial(n - 1);
+        f = fib(n - 1) + fib(n - 2);
     }
+    return f;
 }
 
-// Function to print array
-void printArray(int arr[], int size) {
-    int i;
-    i = 0;
-    while (i < size) {
-        output(arr[i]);
-        i = i + 1;
-    }
-}
-
-// Main function
-void main(void) {
-    int result;
-    int numbers[5];
-    int i;
-    
-    // Calculate factorial of 5
-    result = factorial(5);
-    output(result);
-    
-    // Initialize array
-    i = 0;
-    while (i < 5) {
-        numbers[i] = i + 1;
-        i = i + 1;
-    }
-    
-    // Print array
-    printArray(numbers, 5);
+void main(void)
+{
+     output(fib(3));
 }
 ```
 
-### How to run this example:
+Expected artifacts after compile and run:
+- `semantic_errors.txt`: "The input program is semantically correct." (if no issues)
+- `output.txt`: VM instructions with line numbers
+- `expected.txt`: contains `3` on its own line
 
-1. Save the code above to `input.txt`
-2. Run: `python compile_and_exec.py`
-3. Check `expected.txt` for the output
+More examples are available under `Tests/phase3_tester/testcases/`.
 
-## Testing
+## Implementation Notes
 
-The project includes comprehensive test cases in the `Tests/` directory:
+- Lexer: Table‑driven DFA; keywords recognized in `scanner/alphabet_config.py`
+- Parser: Transition diagrams generated from grammar in `parser/grammar_config/{grammar,first,follow}.txt`
+- CodeGen: Generates IR consumed by `Tests/phase3_tester/test/vm.py`; includes semantic checks (type match, arg counts, undefined ids, void misuse, break scoping)
 
-- **Phase 3 tests**: Located in `Tests/phase3_tester/test/testcases/`
-- **Test categories**:
-  - T1-T10: Basic functionality tests
-  - R1-R4: Regression tests
-  - S1-S4: Semantic analysis tests
+## Useful Commands
 
-To run tests:
+
+- Run a test input file directly:
 ```bash
-cd Tests/phase3_tester
-python test/runner.py
+python3 compile_and_exec.py -i Tests/phase3_tester/test/testcases/T1/input.txt
 ```
-
-## Virtual Machine
-
-The generated code is executed by a custom virtual machine that supports:
-- Memory management
-- Stack operations
-- Arithmetic and logical operations
-- Function calls and returns
-- Control flow instructions
-
-## Error Handling
-
-The compiler provides detailed error reporting for:
-- **Lexical errors**: Invalid tokens, unterminated strings/comments
-- **Syntax errors**: Grammar violations, missing semicolons, brackets
-- **Semantic errors**: Type mismatches, undefined variables, scope violations
-
-## Technical Details
-
-### Grammar
-The language follows a context-free grammar defined in `parser/grammar_config/grammar.txt` with semantic actions for code generation.
-
-### Code Generation
-The compiler generates intermediate code in a three-address format that can be executed by the virtual machine. The code generator handles:
-- Variable allocation and scope management
-- Function calls and parameter passing
-- Control flow (if-else, while loops)
-- Expression evaluation
-- Memory management
-
-### Symbol Table
-Maintains information about:
-- Variable declarations and types
-- Function signatures
-- Scope hierarchy
-- Memory addresses
-
-## Contributing
-
-This is an academic project. For questions or issues, please refer to the course materials or contact the authors.
-
-## License
-
-This project is developed for educational purposes as part of a university compiler course. 

@@ -1,2 +1,1 @@
-123.	 (>, Invalid input)
-129.	 (>, Invalid input)
+There is no lexical error.

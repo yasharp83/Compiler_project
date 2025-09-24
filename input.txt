@@ -120,13 +120,13 @@ void BinaryPrint(int a) {
     Length = 16;
     i = 0;
     ans = 0;
-    while (a > 0) {
+    while (0 < a) {
         tmp = Mod(a, 2);
         a = Div(a, 2, 0);
         Ar[i] = tmp;
         i = i + 1;
     }
-    while (i > 0) {
+    while (0 < i) {
         i = i - 1;
         ans = ans * 10 + Ar[i];
     }
